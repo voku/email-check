@@ -6,11 +6,17 @@
 [![Total Downloads](https://poser.pugx.org/voku/email-check/downloads)](https://packagist.org/packages/voku/email-check)
 [![License](https://poser.pugx.org/voku/email-check/license.svg)](https://packagist.org/packages/voku/email-check)
 
-E-Mail Check for PHP
-=============
+# E-Mail Check for PHP
 
-Usage:
-======
+## Installation
+
+The recommended installation way is through [Composer](https://getcomposer.org).
+
+```bash
+$ composer require voku/email-check
+```
+
+## Usage:
 
 Example 1:
 
