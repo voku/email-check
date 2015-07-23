@@ -1,0 +1,35 @@
+{
+  "name": "voku/email-check",
+  "description": "email-check (syntax, dns, trash, ...) library",
+  "keywords": [
+    "check-email",
+    "mail-check",
+    "email",
+    "mail",
+    "validate-email-address",
+    "validate-email",
+    "validate-mail"
+  ],
+  "type": "library",
+  "homepage": "https://github.com/voku/email-check",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Lars Moelleken",
+      "homepage": "http://www.moelleken.org/"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.0",
+    "voku/portable-utf8": "1.*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.*",
+    "satooshi/php-coveralls": "0.7.*@dev"
+  },
+  "autoload": {
+    "psr-0": {
+      "voku": "src"
+    }
+  }
+}
