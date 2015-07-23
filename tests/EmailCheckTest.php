@@ -214,4 +214,17 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
       self::assertEquals(true, EmailCheck::isTypoInDomain($domain), $domain);
     }
   }
+
+  public function testIsEmailExample()
+  {
+    // Not valid
+    self::assertFalse(EmailCheck::isValid('example.com', true, false, false, false));
+    self::assertFalse(EmailCheck::isValid('example@example', true, false, false, false));
+    self::assertFalse(EmailCheck::isValid('example[AT]example.com', true, false, false, false));
+    self::assertFalse(EmailCheck::isValid('example@example.com', true, false, false, false));
+    self::assertFalse(EmailCheck::isValid('example+label@example.com', true, false, false, false));
+
+    // Valid
+    self::assertTrue(EmailCheck::isValid('example+label@diesisteintest.de', true, false, false, false));
+  }
 }
