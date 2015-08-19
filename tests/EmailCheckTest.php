@@ -234,6 +234,9 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
     $faker = Factory::create();
 
     for ($i = 0; $i < 2000; $i++) {
+      $name = $faker->firstName; // e.g.: 'Joe'
+      self::assertFalse(EmailCheck::isValid($name), $name);
+
       $email = $faker->email; // e.g.: 'tkshlerin@collins.com'
       self::assertTrue(EmailCheck::isValid($email), $email);
 
