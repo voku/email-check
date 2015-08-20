@@ -55,6 +55,10 @@ class EmailCheck
 
   /**
    * @var array
+   *
+   * here you can find more domains:
+   * - https://github.com/vboctor/disposable_email_checker
+   * - https://gist.github.com/michenriksen/8710649
    */
   public static $domainsTemporary = array(
       '0-mail.com',
@@ -64,6 +68,7 @@ class EmailCheck
       '0wnd.net',
       '0wnd.org',
       '10minutemail.com',
+      '10minutemail.co.za',
       '20minutemail.com',
       '2prong.com',
       '30minutemail.com',
@@ -559,6 +564,7 @@ class EmailCheck
       'thankyou2010.com',
       'thisisnotmyrealemail.com',
       'throwawayemailaddress.com',
+      'throam.com',
       'tilien.com',
       'tmail.com',
       'tmailinator.com',
@@ -721,9 +727,9 @@ class EmailCheck
   protected static $useDnsCheck = true;
 
   /**
-   * checkEmail
+   * check if the email is valid
    *
-   * @param            $email
+   * @param string     $email
    * @param bool|true  $useExampleDomainCheck
    * @param bool|true  $useTypoInDomainCheck
    * @param bool|true  $useTemporaryDomainCheck
