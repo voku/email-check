@@ -78,6 +78,8 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
         "cdburgess+!#$%&'*-/=?+_{}|~test@gmail.com",
         'test@xn--example.com',
         'foobar.66540@web.de',
+        'fdsfsd@☺fdsvsdfesf.de',
+        'fodsadsaobar@ŧ-online.de',
     );
 
     $testArrayFail = array(
@@ -114,6 +116,7 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
         'afz@al.com',
         'fca05s6e_2@-online.de',
         'vkqwqlgfrjfna@+++,com',
+        'foobsadar%40live.de',
     );
 
     self::assertEquals(false, EmailCheck::isValid(''));
