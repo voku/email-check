@@ -122,37 +122,37 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
     self::assertEquals(false, EmailCheck::isValid(''));
 
     $email = 'lall';
-    self::assertEquals(false, EmailCheck::isValid($email), $email);
+    self::assertEquals(false, EmailCheck::isValid($email, true, true, true, false), $email);
 
     $email = 'lall.öäü.de';
-    self::assertEquals(false, EmailCheck::isValid($email), $email);
+    self::assertEquals(false, EmailCheck::isValid($email, true, true, true, false), $email);
 
     $email = 'test@-tonline.de.de';
-    self::assertEquals(false, EmailCheck::isValid($email), $email);
+    self::assertEquals(false, EmailCheck::isValid($email, true, true, true, false), $email);
 
     $email = 'lars@moelleken.org';
-    self::assertEquals(true, EmailCheck::isValid($email), $email);
+    self::assertEquals(true, EmailCheck::isValid($email, true, true, true, false), $email);
 
     $email = 'Lars@Moelleken.ORG';
-    self::assertEquals(true, EmailCheck::isValid($email), $email);
+    self::assertEquals(true, EmailCheck::isValid($email, true, true, true, false), $email);
 
     $email = 'Lars@Mölleken.ORG';
-    self::assertEquals(true, EmailCheck::isValid($email), $email);
+    self::assertEquals(true, EmailCheck::isValid($email, true, true, true, false), $email);
 
     $email = 'Lars@MÖlleken.ORG';
-    self::assertEquals(true, EmailCheck::isValid($email), $email);
+    self::assertEquals(true, EmailCheck::isValid($email, true, true, true, false), $email);
 
     if ($idnToAsciiFunctionExists === true) {
       $email = 'Lars@Môelléken.org';
-      self::assertEquals(true, EmailCheck::isValid($email), $email);
+      self::assertEquals(true, EmailCheck::isValid($email, true, true, true, false), $email);
     }
 
     foreach ($testArrayOk as $email) {
-      self::assertEquals(true, EmailCheck::isValid($email), $email);
+      self::assertEquals(true, EmailCheck::isValid($email, true, true, true, false), $email);
     }
 
     foreach ($testArrayFail as $email) {
-      self::assertEquals(false, EmailCheck::isValid($email), $email);
+      self::assertEquals(false, EmailCheck::isValid($email, true, true, true, false), $email);
     }
   }
 

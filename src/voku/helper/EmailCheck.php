@@ -737,7 +737,7 @@ class EmailCheck
    *
    * @return bool
    */
-  public static function isValid($email, $useExampleDomainCheck = true, $useTypoInDomainCheck = true, $useTemporaryDomainCheck = true, $useDnsCheck = false)
+  public static function isValid($email, $useExampleDomainCheck = false, $useTypoInDomainCheck = false, $useTemporaryDomainCheck = false, $useDnsCheck = false)
   {
     // make sure string length is limited to avoid DOS attacks
     if (!is_string($email) || strlen($email) >= 320) {
