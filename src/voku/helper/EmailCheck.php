@@ -790,7 +790,7 @@ class EmailCheck
         $dnsCheck = self::isDnsError($domain);
 
         if ($dnsCheck !== null) {
-          return (boolean)$dnsCheck;
+          return (boolean) $dnsCheck;
         }
       }
 
