@@ -750,10 +750,7 @@ class EmailCheck
       $domain = UTF8::strtolower($parts[3]);
 
       // idn_to_ascii process only the domain, not the user@ part of the email
-      $idnToAsciiFunctionExists = function_exists('idn_to_ascii');
-      if ($idnToAsciiFunctionExists === true) {
-        $domain = idn_to_ascii($domain);
-      }
+      $domain = idn_to_ascii($domain);
 
       $email = $parts[1] . $local . '@' . $domain . $parts[4];
 
@@ -761,7 +758,7 @@ class EmailCheck
         return false;
       } else {
 
-        if (function_exists('filter_var') && $idnToAsciiFunctionExists === true) {
+        if (function_exists('filter_var')) {
 
           if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return false;
