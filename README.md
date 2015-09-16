@@ -24,12 +24,23 @@ Example 1:
     
     // true
 
-Example 2:
+Example 2: (domain-example)
 
-    $emailCheck = EmailCheck::isValid("lars@example.com");
+    $emailCheck = EmailCheck::isValid("lars@example.com", true);
     
     // false
 
+Example 3: (domains-typo)
+
+    $emailCheck = EmailCheck::isValid("lars@-tonline.de", false, true);
+    
+    // false
+
+Example 4: (domains-temporary)
+
+    $emailCheck = EmailCheck::isValid("lars@30minutemail.com", false, false, true);
+    
+    // false
 
 Unit Test:
 ==========
