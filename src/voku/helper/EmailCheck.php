@@ -746,59 +746,54 @@ class EmailCheck
       return false;
     } else {
 
-      $local = UTF8::strtolower($parts[2]);
-      $domain = UTF8::strtolower($parts[3]);
+      $local = $parts[2];
+      $domain = $parts[3];
 
       // idn_to_ascii process only the domain, not the user@ part of the email
       $domain = idn_to_ascii($domain);
 
       $email = $parts[1] . $local . '@' . $domain . $parts[4];
 
-      if (!$domain || !$email) {
-        return false;
+      if (function_exists('filter_var')) {
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+          return false;
+        } else {
+          $valid = true;
+        }
+
       } else {
 
-        if (function_exists('filter_var')) {
+        $regEx = '/^(?<local>' . self::EMAIL_REGEX_LOCAL . ')@(?<domain>' . self::EMAIL_REGEX_DOMAIN . ')$/iD';
 
-          if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return false;
-          } else {
-            $valid = true;
-          }
-
+        if (!preg_match($regEx, $email)) {
+          return false;
         } else {
-
-          $regEx = '/^(?<local>' . self::EMAIL_REGEX_LOCAL . ')@(?<domain>' . self::EMAIL_REGEX_DOMAIN . ')$/iD';
-
-          if (!preg_match($regEx, $email)) {
-            return false;
-          } else {
-            $valid = true;
-          }
-
-        }
-
-        if ($useExampleDomainCheck === true && self::isExampleDomain($domain) === true) {
-          return false;
-        }
-
-        if ($useTypoInDomainCheck === true && self::isTypoInDomain($domain) === true) {
-          return false;
-        }
-
-        if ($useTemporaryDomainCheck === true && self::isTemporaryDomain($domain) === true) {
-          return false;
-        }
-
-        if ($useDnsCheck) {
-          $dnsCheck = self::isDnsError($domain);
-
-          if ($dnsCheck !== null) {
-            return (boolean)$dnsCheck;
-          }
+          $valid = true;
         }
 
       }
+
+      if ($useExampleDomainCheck === true && self::isExampleDomain($domain) === true) {
+        return false;
+      }
+
+      if ($useTypoInDomainCheck === true && self::isTypoInDomain($domain) === true) {
+        return false;
+      }
+
+      if ($useTemporaryDomainCheck === true && self::isTemporaryDomain($domain) === true) {
+        return false;
+      }
+
+      if ($useDnsCheck) {
+        $dnsCheck = self::isDnsError($domain);
+
+        if ($dnsCheck !== null) {
+          return (boolean)$dnsCheck;
+        }
+      }
+
     }
 
 
