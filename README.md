@@ -24,19 +24,19 @@ Example 1:
     
     // true
 
-Example 2: (domain-example)
+Example 2: (check for example-domain)
 
     $emailCheck = EmailCheck::isValid("lars@example.com", true);
     
     // false
 
-Example 3: (domains-typo)
+Example 3: (check for typo in domain)
 
     $emailCheck = EmailCheck::isValid("lars@-tonline.de", false, true);
     
     // false
 
-Example 4: (domains-temporary)
+Example 4: (check for temporary-domain)
 
     $emailCheck = EmailCheck::isValid("lars@30minutemail.com", false, false, true);
     
