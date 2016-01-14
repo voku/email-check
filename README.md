@@ -3,7 +3,9 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/voku/email-check/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/voku/email-check/?branch=master)
 [![Codacy Badge](https://www.codacy.com/project/badge/512a3dc264b745b18baa1b238470b1d0)](https://www.codacy.com/app/voku/email-check)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/a9eca36c-3410-4291-958d-a18e7d852109/mini.png)](https://insight.sensiolabs.com/projects/a9eca36c-3410-4291-958d-a18e7d852109)
-[![Latest Stable Version](https://poser.pugx.org/voku/email-check/v/stable)](https://packagist.org/packages/voku/email-check) [![Total Downloads](https://poser.pugx.org/voku/email-check/downloads)](https://packagist.org/packages/voku/email-check) [![Latest Unstable Version](https://poser.pugx.org/voku/email-check/v/unstable)](https://packagist.org/packages/voku/email-check) 
+[![Latest Stable Version](https://poser.pugx.org/voku/email-check/v/stable)](https://packagist.org/packages/voku/email-check) 
+[![Total Downloads](https://poser.pugx.org/voku/email-check/downloads)](https://packagist.org/packages/voku/email-check) 
+[![Latest Unstable Version](https://poser.pugx.org/voku/email-check/v/unstable)](https://packagist.org/packages/voku/email-check) 
 [![PHP 7 ready](http://php7ready.timesplinter.ch/voku/email-check/badge.svg)](https://travis-ci.org/voku/email-check)
 [![License](https://poser.pugx.org/voku/email-check/license)](https://packagist.org/packages/voku/email-check)
 
