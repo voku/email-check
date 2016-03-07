@@ -2,6 +2,8 @@
 
 namespace voku\helper;
 
+use TrueBV\Punycode;
+
 /**
  * E-Mail Check Class
  *
@@ -13,35 +15,6 @@ namespace voku\helper;
  */
 class EmailCheck
 {
-
-  /*
-   * The regex below is based on a regex by Michael Rushton.
-   * However, it is not identical.  I changed it to only consider routeable
-   * addresses as valid.  Michael's regex considers a@b a valid address
-   * which conflicts with section 2.3.5 of RFC 5321 which states that:
-   *
-   *   Only resolvable, fully-qualified domain names (FQDNs) are permitted
-   *   when domain names are used in SMTP.  In other words, names that can
-   *   be resolved to MX RRs or address (i.e., A or AAAA) RRs (as discussed
-   *   in Section 5) are permitted, as are CNAME RRs whose targets can be
-   *   resolved, in turn, to MX or address RRs.  Local nicknames or
-   *   unqualified names MUST NOT be used.
-   *
-   * This regex does not handle comments and folding whitespace.  While
-   * this is technically valid in an email address, these parts aren't
-   * actually part of the address itself.
-   *
-   * Michael's regex carries this copyright:
-   *
-   * Copyright © Michael Rushton 2009-10
-   * http://squiloople.com/
-   * Feel free to use and redistribute this code. But please keep this copyright notice.
-   *
-   * source: http://lxr.php.net/xref/PHP_5_4/ext/filter/logical_filters.c#529
-   */
-  const EMAIL_REGEX_LOCAL  = '(?!(?:(?:\\x22?\\x5C[\\x00-\\x7E]\\x22?)|(?:\\x22?[^\\x5C\\x22]\\x22?)){255,})(?!(?:(?:\\x22?\\x5C[\\x00-\\x7E]\\x22?)|(?:\\x22?[^\\x5C\\x22]\\x22?)){65,}@)(?:(?:[\\x21\\x23-\\x27\\x2A\\x2B\\x2D\\x2F-\\x39\\x3D\\x3F\\x5E-\\x7E]+)|(?:\\x22(?:[\\x01-\\x08\\x0B\\x0C\\x0E-\\x1F\\x21\\x23-\\x5B\\x5D-\\x7F]|(?:\\x5C[\\x00-\\x7F]))*\\x22))(?:\\.(?:(?:[\\x21\\x23-\\x27\\x2A\\x2B\\x2D\\x2F-\\x39\\x3D\\x3F\\x5E-\\x7E]+)|(?:\\x22(?:[\\x01-\\x08\\x0B\\x0C\\x0E-\\x1F\\x21\\x23-\\x5B\\x5D-\\x7F]|(?:\\x5C[\\x00-\\x7F]))*\\x22)))*';
-  const EMAIL_REGEX_DOMAIN = '(?:(?:(?!.*[^.]{64,})(?:(?:(?:xn--)?[a-z0-9]+(?:-[a-z0-9]+)*\\.){1,126}){1,}(?:(?:[a-z][a-z0-9]*)|(?:(?:xn--)[a-z0-9]+))(?:-[a-z0-9]+)*)|(?:\\[(?:(?:IPv6:(?:(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){7})|(?:(?!(?:.*[a-f0-9][:\\]]){7,})(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,5})?::(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,5})?)))|(?:(?:IPv6:(?:(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){5}:)|(?:(?!(?:.*[a-f0-9]:){5,})(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,3})?::(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,3}:)?)))?(?:(?:25[0-5])|(?:2[0-4][0-9])|(?:1[0-9]{2})|(?:[1-9]?[0-9]))(?:\\.(?:(?:25[0-5])|(?:2[0-4][0-9])|(?:1[0-9]{2})|(?:[1-9]?[0-9]))){3}))\\]))';
-
   public static $domainsExample = array(
       'test.de',
       'test.com',
@@ -749,29 +722,16 @@ class EmailCheck
       $local = $parts[2];
       $domain = $parts[3];
 
-      // idn_to_ascii process only the domain, not the user@ part of the email
-      $domain = idn_to_ascii($domain);
+      $punycode = new Punycode();
+      // process only the domain, not the user@ part of the email
+      $domain = $punycode->encode($domain);
 
       $email = $parts[1] . $local . '@' . $domain . $parts[4];
 
-      if (function_exists('filter_var')) {
-
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-          return false;
-        } else {
-          $valid = true;
-        }
-
+      if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return false;
       } else {
-
-        $regEx = '/^(?<local>' . self::EMAIL_REGEX_LOCAL . ')@(?<domain>' . self::EMAIL_REGEX_DOMAIN . ')$/iD';
-
-        if (!preg_match($regEx, $email)) {
-          return false;
-        } else {
-          $valid = true;
-        }
-
+        $valid = true;
       }
 
       if ($useExampleDomainCheck === true && self::isExampleDomain($domain) === true) {
