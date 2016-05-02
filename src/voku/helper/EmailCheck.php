@@ -713,20 +713,21 @@ class EmailCheck
   public static function isValid($email, $useExampleDomainCheck = false, $useTypoInDomainCheck = false, $useTemporaryDomainCheck = false, $useDnsCheck = false)
   {
     // make sure string length is limited to avoid DOS attacks
-    if (!is_string($email) || strlen($email) >= 320) {
+    if (!is_string($email) || strlen($email) >= 320 || strpos($email, ' ') !== false) {
       return false;
     } elseif (!preg_match('/^(.*<?)(.*)@(.*)(>?)$/', $email, $parts)) {
       return false;
     } else {
 
-      $local = $parts[2];
+      $localFirst = $parts[1];
+      $localSecond = $parts[2];
       $domain = $parts[3];
 
       $punycode = new Punycode();
-      // process only the domain, not the user@ part of the email
+      $localFirst = $punycode->encode($localFirst);
       $domain = $punycode->encode($domain);
 
-      $email = $parts[1] . $local . '@' . $domain . $parts[4];
+      $email = $localFirst . $localSecond . '@' . $domain . $parts[4];
 
       if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         return false;

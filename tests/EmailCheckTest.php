@@ -8,6 +8,21 @@ use voku\helper\EmailCheck;
 class EmailCheckTest extends \PHPUnit_Framework_TestCase
 {
 
+  /**
+   * @var EmailCheck
+   */
+  protected $validator;
+
+  protected function setUp()
+  {
+    $this->validator = new EmailCheck();
+  }
+
+  protected function tearDown()
+  {
+    $this->validator = null;
+  }
+
   public function testCheckEmail()
   {
     $idnToAsciiFunctionExists = function_exists('idn_to_ascii');
@@ -80,12 +95,13 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
         'foobar.66540@web.de',
         'fdsfsd@☺fdsvsdfesf.de',
         'fodsadsaobar@ŧ-online.de',
+        'aluzbö70l@a5k-nig8t2.com',
+        '8imt§3g_1g4y@se§25ü4o7.comv',
     );
 
     $testArrayFail = array(
         'test@test.com',
         'test@example.com',
-        'aluzbö70l@a5k-nig8t2.com',
         '@amaaxtyy.com',
         'xktpwt4611mpb2r@.com',
         'xo.w8w8o.q84@itpu9rkn.',
@@ -107,7 +123,6 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
         '1z2uavb3vlv@anvf)mx56x3.com',
         'fehmr8(et8y@spyi0-40.com',
         'ej24)vo@5gz0l6l2.com',
-        '8imt§3g_1g4y@se§25ü4o7.comv',
         'vx8q!!!###yfnsoz@adofccl5z:a',
         'rv5-ng7.3owx6@com',
         'mx_kbtc.8i67_h@pu-7391.',
@@ -236,7 +251,7 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
   {
     $faker = Factory::create();
 
-    for ($i = 0; $i < 2000; $i++) {
+    for ($i = 0; $i < 1000; $i++) {
       $name = $faker->firstName; // e.g.: 'Joe'
       self::assertFalse(EmailCheck::isValid($name), $name);
 
@@ -252,5 +267,180 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
       $safeEmail = $faker->safeEmail; // e.g.: 'king.alford@example.org'
       self::assertTrue(EmailCheck::isValid($safeEmail, false, true, true, false), $safeEmail);
     }
+  }
+
+  /**
+   * @dataProvider getValidEmails
+   *
+   * @param $email
+   */
+  public function testValidEmails($email)
+  {
+    /** @noinspection StaticInvocationViaThisInspection */
+    self::assertTrue($this->validator->isValid($email), 'tested: ' . $email);
+  }
+
+  public function testInvalidUTF8Email()
+  {
+    $validator = new EmailCheck();
+    $email = "\x80\x81\x82@\x83\x84\x85.\x86\x87\x88";
+    /** @noinspection StaticInvocationViaThisInspection */
+    self::assertFalse($validator->isValid($email));
+  }
+
+  /**
+   * @return array
+   */
+  public function getValidEmails()
+  {
+    return array(
+        array('â@iana.org'),
+        array('fabien@symfony.com'),
+        array('example@example.co.uk'),
+        array('fabien_potencier@example.fr'),
+        //array('example@localhost'),
+        array('fab\'ien@symfony.com'),
+        //array('fab\ ien@symfony.com'),
+        //array('example((example))@fakedfake.co.uk'),
+        //array('example@faked(fake).co.uk'),
+        array('fabien+@symfony.com'),
+        array('инфо@письмо.рф'),
+        array('"username"@example.com'),
+        array('"user,name"@example.com'),
+        //array('"user name"@example.com'),
+        array('"user@name"@example.com'),
+        array('"\a"@iana.org'),
+        //array('"test\ test"@iana.org'),
+        array('""@iana.org'),
+        array('"\""@iana.org'),
+        array('müller@möller.de'),
+        //array('test@email*'),
+        //array('test@email!'),
+        //array('test@email&'),
+        //array('test@email^'),
+        //array('test@email%'),
+        //array('test@email$'),
+        array('test@email.com.au'),
+    );
+  }
+
+  /**
+   * @dataProvider getInvalidEmails
+   *
+   * @param $email
+   */
+  public function testInvalidEmails($email)
+  {
+    /** @noinspection StaticInvocationViaThisInspection */
+    self::assertFalse($this->validator->isValid($email), 'tested: ' . $email);
+  }
+
+  /**
+   * @return array
+   */
+  public function getInvalidEmails()
+  {
+    return array(
+        array('test@example.com test'),
+        array('user  name@example.com'),
+        array('user   name@example.com'),
+        array('example.@example.co.uk'),
+        array('example@example@example.co.uk'),
+        array('(test_exampel@example.fr)'),
+        array('example(example)example@example.co.uk'),
+        array('.example@localhost'),
+        array('ex\ample@localhost'),
+        array('example@local\host'),
+        array('example@localhost.'),
+        array('user name@example.com'),
+        array('username@ example . com'),
+        array('example@(fake).com'),
+        array('example@(fake.com'),
+        array('username@example,com'),
+        array('usern,ame@example.com'),
+        array('user[na]me@example.com'),
+        array('"""@iana.org'),
+        array('"\"@iana.org'),
+        array('"test"test@iana.org'),
+        array('"test""test"@iana.org'),
+        //array('"test"."test"@iana.org'),
+        //array('"test".test@iana.org'),
+        array('"test"' . chr(0) . '@iana.org'),
+        array('"test\"@iana.org'),
+        //array(chr(226) . '@iana.org'),
+        array('test@' . chr(226) . '.org'),
+        array('\r\ntest@iana.org'),
+        array('\r\n test@iana.org'),
+        array('\r\n \r\ntest@iana.org'),
+        array('\r\n \r\ntest@iana.org'),
+        array('\r\n \r\n test@iana.org'),
+        array('test@iana.org \r\n'),
+        array('test@iana.org \r\n '),
+        array('test@iana.org \r\n \r\n'),
+        array('test@iana.org \r\n\r\n'),
+        array('test@iana.org  \r\n\r\n '),
+        array('test@iana/icann.org'),
+        array('test@foo;bar.com'),
+        array('test;123@foobar.com'),
+        array('test@example..com'),
+        array('email.email@email."'),
+        array('test@email>'),
+        array('test@email<'),
+        array('test@email{'),
+        array('test@email.com]'),
+        array('test@ema[il.com'),
+    );
+  }
+
+  /**
+   * @dataProvider getInvalidEmailsWithDnsCheck
+   *
+   * @param $email
+   */
+  public function testInvalidEmailsWithDnsCheck($email)
+  {
+    /** @noinspection StaticInvocationViaThisInspection */
+    self::assertFalse($this->validator->isValid($email, false, false, false, true), 'tested: ' . $email);
+  }
+
+  /**
+   * @return array
+   */
+  public function getInvalidEmailsWithDnsCheck()
+  {
+    return array(
+        array('example @example.co.uk',),
+        array('example@ example.co.uk',),
+        array('example@example(examplecomment).co.uk',),
+        array('example(examplecomment)@example.co.uk',),
+        array("\"\t\"@example.co.uk",),
+        array("\"\r\"@example.co.uk",),
+        //array('example@[127.0.0.1]',),
+        //array('example@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334]',),
+        array('example@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370::]',),
+        array('example@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334::]',),
+        array('example@[IPv6:1::1::1]',),
+        array("example@[\n]",),
+        array('example@[::1]',),
+        array('example@[::123.45.67.178]',),
+        array('example@[IPv6::2001:0db8:85a3:0000:0000:8a2e:0370:7334]',),
+        array('example@[IPv6:z001:0db8:85a3:0000:0000:8a2e:0370:7334]',),
+        array('example@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:]',),
+        array('"example"@example.co.uk',),
+        array('too_long_localpart_too_long_localpart_too_long_localpart_too_long_localpart@example.co.uk',),
+        array('example@toolonglocalparttoolonglocalparttoolonglocalparttoolonglocalpart.co.uk',),
+        array(
+            'example@toolonglocalparttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocal' .
+            'parttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocalpart' .
+            'toolonglocalparttoolonglocalparttoolonglocalparttoolonglocalpart',
+        ),
+        array(
+            'example@toolonglocalparttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocal' .
+            'parttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocalpart' .
+            'toolonglocalparttoolonglocalparttoolonglocalparttoolonglocalpar',
+        ),
+        array('test@test',),
+        array('"test"@test',),
+    );
   }
 }
