@@ -97,6 +97,7 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
         'fodsadsaobar@ŧ-online.de',
         'aluzbö70l@a5k-nig8t2.com',
         '8imt§3g_1g4y@se§25ü4o7.comv',
+        'tworzenieweb+hans.müller@gmail.com',
     );
 
     $testArrayFail = array(
