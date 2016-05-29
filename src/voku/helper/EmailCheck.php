@@ -723,9 +723,20 @@ class EmailCheck
       $localSecond = $parts[2];
       $domain = $parts[3];
 
-      $punycode = new Punycode();
-      $localFirst = $punycode->encode($localFirst);
-      $domain = $punycode->encode($domain);
+      if (function_exists('idn_to_ascii')) {
+
+        $localFirst = idn_to_ascii($localFirst);
+        $domain = idn_to_ascii($domain);
+
+        if (!$localFirst) {
+          $localFirst = $parts[1];
+        }
+
+      } else {
+        $punycode = new Punycode();
+        $localFirst = $punycode->encode($localFirst);
+        $domain = $punycode->encode($domain);
+      }
 
       $email = $localFirst . $localSecond . '@' . $domain . $parts[4];
 
