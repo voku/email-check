@@ -410,12 +410,12 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
   public function getInvalidEmailsWithDnsCheck()
   {
     return array(
-        array('example @example.co.uk',),
-        array('example@ example.co.uk',),
+        array('example@dfsdfsdfdsfsdfsdf.co.uk',),
+        array('example@ dfsdfsdfdsfsdfsdf.co.uk',),
         array('example@example(examplecomment).co.uk',),
         array('example(examplecomment)@example.co.uk',),
-        array("\"\t\"@example.co.uk",),
-        array("\"\r\"@example.co.uk",),
+        array("\"\t\"@dfsdfsdfdsfsdfsdf.co.uk",),
+        array("\"\r\"@dfsdfsdfdsfsdfsdf.co.uk",),
         //array('example@[127.0.0.1]',),
         //array('example@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334]',),
         array('example@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370::]',),
@@ -427,8 +427,8 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
         array('example@[IPv6::2001:0db8:85a3:0000:0000:8a2e:0370:7334]',),
         array('example@[IPv6:z001:0db8:85a3:0000:0000:8a2e:0370:7334]',),
         array('example@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:]',),
-        array('"example"@example.co.uk',),
-        array('too_long_localpart_too_long_localpart_too_long_localpart_too_long_localpart@example.co.uk',),
+        array('"example"@dfsdfsdfdsfsdfsdf.co.uk',),
+        array('too_long_localpart_too_long_localpart_too_long_localpart_too_long_localpart@dfsdfsdfdsfsdfsdf.co.uk',),
         array('example@toolonglocalparttoolonglocalparttoolonglocalparttoolonglocalpart.co.uk',),
         array(
             'example@toolonglocalparttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocal' .
