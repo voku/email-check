@@ -758,12 +758,8 @@ class EmailCheck
         return false;
       }
 
-      if ($useDnsCheck) {
-        $dnsCheck = self::isDnsError($domain);
-
-        if ($dnsCheck !== null) {
-          return (boolean) $dnsCheck;
-        }
+      if ($useDnsCheck === true && self::isDnsError($domain) === true) {
+        return false;
       }
 
     }
@@ -832,7 +828,7 @@ class EmailCheck
     if (function_exists('checkdnsrr')) {
       return !checkdnsrr($domain . '.', 'MX') || !checkdnsrr($domain, 'A');
     } else {
-      return null;
+      throw new \Exception(' Can\'t call checkdnsrr');
     }
   }
 }
