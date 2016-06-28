@@ -1,5 +1,5 @@
 {
-  "name": "anhofmann/email-check",
+  "name": "voku/email-check",
   "description": "email-check (syntax, dns, trash, ...) library",
   "keywords": [
     "check-email",
@@ -11,7 +11,7 @@
     "validate-mail"
   ],
   "type": "library",
-  "homepage": "https://github.com/anhofmann/email-check",
+  "homepage": "https://github.com/voku/email-check",
   "license": "MIT",
   "authors": [
     {
