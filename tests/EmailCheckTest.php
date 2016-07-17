@@ -1,9 +1,12 @@
 <?php
+
 use Faker\Factory;
 use voku\helper\EmailCheck;
 
 /**
  * MailCheckTest
+ *
+ * - https://isemail.info/_system/is_email/test/?all
  */
 class EmailCheckTest extends \PHPUnit_Framework_TestCase
 {
@@ -295,33 +298,36 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
   public function getValidEmails()
   {
     return array(
+        array('!#$%&`*+/=?^`{|}~@iana.org'),
+        array('test@io.io'),
         array('â@iana.org'),
         array('fabien@symfony.com'),
         array('example@example.co.uk'),
         array('fabien_potencier@example.fr'),
-        //array('example@localhost'),
         array('fab\'ien@symfony.com'),
-        //array('fab\ ien@symfony.com'),
-        //array('example((example))@fakedfake.co.uk'),
-        //array('example@faked(fake).co.uk'),
+        array('example@fakedfake.co.uk'),
+        array('example@faked.fake.co.uk'),
         array('fabien+@symfony.com'),
         array('инфо@письмо.рф'),
         array('"username"@example.com'),
         array('"user,name"@example.com'),
+        array('"user+name"@example.com'),
+        //array('fab\ ien@symfony.com'),
         //array('"user name"@example.com'),
+        //array('"test\ test"@iana.org'),
+        array('test@[255.255.255.255]'),
+        array('test@[IPv6:1111:2222:3333:4444:5555:6666:7777:8888]'),
+        array('!#$%&`*+/=?^`{|}~@[IPv6:1111:2222:3333:4444::255.255.255.255]'),
         array('"user@name"@example.com'),
         array('"\a"@iana.org'),
-        //array('"test\ test"@iana.org'),
         array('""@iana.org'),
         array('"\""@iana.org'),
         array('müller@möller.de'),
-        //array('test@email*'),
-        //array('test@email!'),
-        //array('test@email&'),
-        //array('test@email^'),
-        //array('test@email%'),
-        //array('test@email$'),
         array('test@email.com.au'),
+        array('123@iana.org'),
+        array('test@123.com'),
+        array('abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghiklm@iana.org'),
+        array('test@xn--hxajbheg2az3al.xn--jxalpdlp'),
     );
   }
 
@@ -342,6 +348,29 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
   public function getInvalidEmails()
   {
     return array(
+        array(''), // Address has no domain part
+        array('test'), // Address has no domain part
+        array('@'), // Address has no local part
+        array('test@'), // Address has no domain part
+        array('@iana.org'), // Address has no local part
+        array('.test@iana.org'), // Neither part of the address may begin with a dot
+        array('test.@iana.org'), // Neither part of the address may end with a dot
+        array('test..iana.org'), // The address may not contain consecutive dots
+        array('test\@test@iana.org'), // Address contains a character that is not allowed
+        array('test@a[255.255.255.255]'), // Address contains a character that is not allowed
+        array('test@[255.255.255]'), // The domain literal is not a valid RFC 5321 address literal
+        array('test@[255.255.255.255.255]'), // The domain literal is not a valid RFC 5321 address literal
+        array('test@[255.255.255.256]'), // The domain literal is not a valid RFC 5321 address literal
+        array('test@[1111:2222:3333:4444:5555:6666:7777:8888]'),
+        array('test@[IPv6:1111:2222:3333:4444:5555:6666:7777]'),
+        array('test@[IPv6:1111:2222:3333:4444:5555:6666:7777:8888:9999]'),
+        array('test@[IPv6:1111:2222:3333:4444:5555:6666:7777:888G]'),
+        array('test@email*'),
+        array('test@email!'),
+        array('test@email&'),
+        array('test@email^'),
+        array('test@email%'),
+        array('test@email$'),
         array('test@example.com test'),
         array('user  name@example.com'),
         array('user   name@example.com'),
@@ -349,6 +378,7 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
         array('example@example@example.co.uk'),
         array('(test_exampel@example.fr)'),
         array('example(example)example@example.co.uk'),
+        array('example@localhost'), // RFC5321
         array('.example@localhost'),
         array('ex\ample@localhost'),
         array('example@local\host'),
@@ -362,13 +392,14 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
         array('user[na]me@example.com'),
         array('"""@iana.org'),
         array('"\"@iana.org'),
+        array('"\\"@iana.org'),
         array('"test"test@iana.org'),
         array('"test""test"@iana.org'),
         //array('"test"."test"@iana.org'),
         //array('"test".test@iana.org'),
         array('"test"' . chr(0) . '@iana.org'),
         array('"test\"@iana.org'),
-        //array(chr(226) . '@iana.org'),
+        array(chr(226) . '@iana.org'),
         array('test@' . chr(226) . '.org'),
         array('\r\ntest@iana.org'),
         array('\r\n test@iana.org'),
@@ -380,7 +411,16 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
         array('test@iana.org \r\n \r\n'),
         array('test@iana.org \r\n\r\n'),
         array('test@iana.org  \r\n\r\n '),
-        array('test@iana/icann.org'),
+        array("\r\ntest@iana.org"),
+        array("\r\n test@iana.org"),
+        array("\r\n \r\ntest@iana.org"),
+        array("\r\n \r\ntest@iana.org"),
+        array("\r\n \r\n test@iana.org"),
+        array("test@iana.org \r\n"),
+        array("test@iana.org \r\n "),
+        array("test@iana.org \r\n \r\n"),
+        array("test@iana.org \r\n\r\n"),
+        array("test@iana.org  \r\n\r\n "),
         array('test@foo;bar.com'),
         array('test;123@foobar.com'),
         array('test@example..com'),
@@ -416,8 +456,7 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
         array('example(examplecomment)@example.co.uk',),
         array("\"\t\"@dfsdfsdfdsfsdfsdf.co.uk",),
         array("\"\r\"@dfsdfsdfdsfsdfsdf.co.uk",),
-        //array('example@[127.0.0.1]',),
-        //array('example@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334]',),
+        array('example@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334]',),
         array('example@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370::]',),
         array('example@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334::]',),
         array('example@[IPv6:1::1::1]',),
