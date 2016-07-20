@@ -138,40 +138,40 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
         'foobsadar%40live.de',
     );
 
-    self::assertEquals(false, EmailCheck::isValid(''));
+    self::assertSame(false, EmailCheck::isValid(''));
 
     $email = 'lall';
-    self::assertEquals(false, EmailCheck::isValid($email, true, true, true, false), $email);
+    self::assertSame(false, EmailCheck::isValid($email, true, true, true, false), $email);
 
     $email = 'lall.öäü.de';
-    self::assertEquals(false, EmailCheck::isValid($email, true, true, true, false), $email);
+    self::assertSame(false, EmailCheck::isValid($email, true, true, true, false), $email);
 
     $email = 'test@-tonline.de.de';
-    self::assertEquals(false, EmailCheck::isValid($email, true, true, true, false), $email);
+    self::assertSame(false, EmailCheck::isValid($email, true, true, true, false), $email);
 
     $email = 'lars@moelleken.org';
-    self::assertEquals(true, EmailCheck::isValid($email, true, true, true, false), $email);
+    self::assertSame(true, EmailCheck::isValid($email, true, true, true, false), $email);
 
     $email = 'Lars@Moelleken.ORG';
-    self::assertEquals(true, EmailCheck::isValid($email, true, true, true, false), $email);
+    self::assertSame(true, EmailCheck::isValid($email, true, true, true, false), $email);
 
     $email = 'Lars@Mölleken.ORG';
-    self::assertEquals(true, EmailCheck::isValid($email, true, true, true, false), $email);
+    self::assertSame(true, EmailCheck::isValid($email, true, true, true, false), $email);
 
     $email = 'Lars@MÖlleken.ORG';
-    self::assertEquals(true, EmailCheck::isValid($email, true, true, true, false), $email);
+    self::assertSame(true, EmailCheck::isValid($email, true, true, true, false), $email);
 
     if ($idnToAsciiFunctionExists === true) {
       $email = 'Lars@Môelléken.org';
-      self::assertEquals(true, EmailCheck::isValid($email, true, true, true, false), $email);
+      self::assertSame(true, EmailCheck::isValid($email, true, true, true, false), $email);
     }
 
     foreach ($testArrayOk as $email) {
-      self::assertEquals(true, EmailCheck::isValid($email, true, true, true, false), $email);
+      self::assertSame(true, EmailCheck::isValid($email, true, true, true, false), $email);
     }
 
     foreach ($testArrayFail as $email) {
-      self::assertEquals(false, EmailCheck::isValid($email, true, true, true, false), $email);
+      self::assertSame(false, EmailCheck::isValid($email, true, true, true, false), $email);
     }
   }
 
@@ -183,7 +183,7 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
     );
 
     foreach ($testArrayFalse as $domain) {
-      self::assertEquals(true, EmailCheck::isDnsError($domain), $domain);
+      self::assertSame(true, EmailCheck::isDnsError($domain), $domain);
     }
 
     $testArrayTrue = array(
@@ -192,7 +192,7 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
     );
 
     foreach ($testArrayTrue as $domain) {
-      self::assertEquals(false, EmailCheck::isDnsError($domain), $domain);
+      self::assertSame(false, EmailCheck::isDnsError($domain), $domain);
     }
   }
 
@@ -204,7 +204,7 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
     );
 
     foreach ($testArrayFalse as $domain) {
-      self::assertEquals(false, EmailCheck::isTemporaryDomain($domain), $domain);
+      self::assertSame(false, EmailCheck::isTemporaryDomain($domain), $domain);
     }
 
     $testArrayTrue = array(
@@ -213,7 +213,7 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
     );
 
     foreach ($testArrayTrue as $domain) {
-      self::assertEquals(true, EmailCheck::isTemporaryDomain($domain), $domain);
+      self::assertSame(true, EmailCheck::isTemporaryDomain($domain), $domain);
     }
   }
 
@@ -225,7 +225,7 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
     );
 
     foreach ($testArrayFalse as $domain) {
-      self::assertEquals(false, EmailCheck::isTypoInDomain($domain), $domain);
+      self::assertSame(false, EmailCheck::isTypoInDomain($domain), $domain);
     }
 
     $testArrayTrue = array(
@@ -234,7 +234,7 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
     );
 
     foreach ($testArrayTrue as $domain) {
-      self::assertEquals(true, EmailCheck::isTypoInDomain($domain), $domain);
+      self::assertSame(true, EmailCheck::isTypoInDomain($domain), $domain);
     }
   }
 
