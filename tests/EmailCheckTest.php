@@ -301,6 +301,7 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
         array('!#$%&`*+/=?^`{|}~@iana.org'),
         array('test@io.io'),
         array('â@iana.org'),
+        array('contato@myemail.com.br'),
         array('fabien@symfony.com'),
         array('example@example.co.uk'),
         array('fabien_potencier@example.fr'),
