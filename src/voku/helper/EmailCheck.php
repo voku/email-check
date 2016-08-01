@@ -15,6 +15,9 @@ use TrueBV\Punycode;
  */
 class EmailCheck
 {
+  /**
+   * @var array
+   */
   public static $domainsExample = array(
       'test.de',
       'test.com',
@@ -697,10 +700,13 @@ class EmailCheck
       'yahhoo.de',
   );
 
+  /**
+   * @var bool
+   */
   protected static $useDnsCheck = true;
 
   /**
-   * check if the email is valid
+   * Check if the email is valid.
    *
    * @param string     $email
    * @param bool|true  $useExampleDomainCheck
@@ -719,21 +725,31 @@ class EmailCheck
       return false;
     } else {
 
-      $localFirst = $parts[1];
-      $localSecond = $parts[2];
-      $domain = $parts[3];
+      list($email, $localFirst, $localSecond, $domain) = $parts;
 
-      if (function_exists('idn_to_ascii')) {
+      if (
+          function_exists('idn_to_ascii')
+          &&
+          UTF8::max_chr_width($email) <= 3 // check for unicode chars with more then 3 bytes
+      ) {
 
-        $localFirst = idn_to_ascii($localFirst);
-        $domain = idn_to_ascii($domain);
+        $localFirstTmp = idn_to_ascii($localFirst);
+        if ($localFirstTmp) {
+          $localFirst = $localFirstTmp;
+        }
 
-        if (!$localFirst) {
-          $localFirst = $parts[1];
+        $domainTmp = idn_to_ascii($domain);
+        if ($domainTmp) {
+          $domain = $domainTmp;
         }
 
       } else {
-        $punycode = new Punycode();
+
+        static $punycode = null;
+        if ($punycode === null) {
+          $punycode = new Punycode();
+        }
+
         $localFirst = $punycode->encode($localFirst);
         $domain = $punycode->encode($domain);
       }
@@ -769,7 +785,7 @@ class EmailCheck
   }
 
   /**
-   * check if the domain is a example domain
+   * Check if the domain is a example domain.
    *
    * @param string $domain
    *
@@ -785,7 +801,7 @@ class EmailCheck
   }
 
   /**
-   * check if the domain has a typo
+   * Check if the domain has a typo.
    *
    * @param string $domain
    *
@@ -801,7 +817,7 @@ class EmailCheck
   }
 
   /**
-   * check if the domain is a temporary domain
+   * Check if the domain is a temporary domain.
    *
    * @param string $domain
    *
@@ -817,11 +833,13 @@ class EmailCheck
   }
 
   /**
-   * check if the domain has a typo
+   * Check if the domain has a typo.
    *
    * @param string $domain
    *
    * @return bool|null will return null if we can't use the "checkdnsrr"-function
+   *
+   * @throws \Exception
    */
   public static function isDnsError($domain)
   {
