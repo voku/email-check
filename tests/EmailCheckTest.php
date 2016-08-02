@@ -238,6 +238,38 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
     }
   }
 
+  public function testPerformance()
+  {
+    $iterations = 2000;
+
+    $testingMail = 'example@example.com';
+    echo 'Testing ' . $iterations . ' iterations with ' . $testingMail . PHP_EOL;
+
+    // ---
+
+    $isValid = array();
+    $a = microtime(true);
+    for ($i = 0; $i < $iterations; $i++) {
+      $isValid[] = filter_var($testingMail, FILTER_VALIDATE_EMAIL);
+    }
+    $b = microtime(true);
+    self::assertEquals(false, in_array(false, $isValid, true));
+    echo ($b - $a) . ' seconds with filter_var' . PHP_EOL;
+
+    // ---
+
+    $isValid = array();
+    $a = microtime(true);
+    for ($i = 0; $i < $iterations; $i++) {
+      $isValid[] = EmailCheck::isValid($testingMail);
+    }
+    $b = microtime(true);
+    self::assertEquals(false, in_array(false, $isValid, true));
+    echo ($b - $a) . ' seconds with EmailCheck' . PHP_EOL;
+
+    // ---
+  }
+
   public function testIsEmailExample()
   {
     // Not valid
