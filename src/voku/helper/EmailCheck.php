@@ -718,8 +718,15 @@ class EmailCheck
    */
   public static function isValid($email, $useExampleDomainCheck = false, $useTypoInDomainCheck = false, $useTemporaryDomainCheck = false, $useDnsCheck = false)
   {
-    // make sure string length is limited to avoid DOS attacks
-    if (!is_string($email) || strlen($email) >= 320 || strpos($email, ' ') !== false) {
+    if (
+        !is_string($email) // must be a string
+        ||
+        strpos($email, ' ') !== false // no space allowed
+        ||
+        (strpos($email, '.') === false && strpos($email, ':') === false) // dot or colon is needed
+        ||
+        strlen($email) >= 320 // make sure string length is limited to avoid DOS attacks
+    ) {
       return false;
     } elseif (!preg_match('/^(.*<?)(.*)@(.*)(>?)$/', $email, $parts)) {
       return false;
