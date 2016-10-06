@@ -352,6 +352,7 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
         array('test@[IPv6:1111:2222:3333:4444:5555:6666:7777:8888]'),
         array('!#$%&`*+/=?^`{|}~@[IPv6:1111:2222:3333:4444::255.255.255.255]'),
         array('foobar@foobar.foo.ws'),
+        array('武＠メール.グーグル'),
         array('foobar@😍🎻😸🎩🎱🎮🍟🐝.🍕💩.ws'),
         array('"user@name"@example.com'),
         array('"\a"@iana.org'),

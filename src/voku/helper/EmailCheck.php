@@ -723,12 +723,21 @@ class EmailCheck
         ||
         strpos($email, ' ') !== false // no space allowed
         ||
-        (strpos($email, '.') === false && strpos($email, ':') === false) // dot or colon is needed
-        ||
         strlen($email) >= 320 // make sure string length is limited to avoid DOS attacks
     ) {
       return false;
-    } elseif (!preg_match('/^(.*<?)(.*)@(.*)(>?)$/', $email, $parts)) {
+    }
+
+    $email = str_replace(array('.', '＠'), array('.', '@'), $email); // non-Latin chars are also allowed | https://tools.ietf.org/html/rfc6530
+    if (
+      (strpos($email, '@') === false)
+      ||
+      (strpos($email, '.') === false && strpos($email, ':') === false) // dot or colon is needed
+    ) {
+      return false;
+    }
+
+    if (!preg_match('/^(.*<?)(.*)@(.*)(>?)$/', $email, $parts)) {
       return false;
     } else {
 
