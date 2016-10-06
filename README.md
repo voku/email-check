@@ -9,7 +9,7 @@
 [![PHP 7 ready](http://php7ready.timesplinter.ch/voku/email-check/badge.svg)](https://travis-ci.org/voku/email-check)
 [![License](https://poser.pugx.org/voku/email-check/license)](https://packagist.org/packages/voku/email-check)
 
-# E-Mail Check for PHP
+# E-Mail Address Validator for PHP
 
 ## Installation
 
