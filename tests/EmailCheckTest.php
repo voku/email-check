@@ -345,9 +345,9 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
         array('"username"@example.com'),
         array('"user,name"@example.com'),
         array('"user+name"@example.com'),
-        //array('fab\ ien@symfony.com'),
-        //array('"user name"@example.com'),
-        //array('"test\ test"@iana.org'),
+        array('fab\ ien@symfony.com'),
+        array('"user name"@example.com'),
+        array('"test\ test"@iana.org'),
         array('test@[255.255.255.255]'),
         array('test@[IPv6:1111:2222:3333:4444:5555:6666:7777:8888]'),
         array('!#$%&`*+/=?^`{|}~@[IPv6:1111:2222:3333:4444::255.255.255.255]'),
@@ -359,6 +359,9 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
         array('""@iana.org'),
         array('"\""@iana.org'),
         array('müller@möller.de'),
+        array('m.üller@möller.de'),
+        array('"meuller m"@möller.de'),
+        array('"müller m"@möller.de'),
         array('test@email.com.au'),
         array('123@iana.org'),
         array('test@123.com'),
@@ -431,8 +434,12 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
         array('"\\"@iana.org'),
         array('"test"test@iana.org'),
         array('"test""test"@iana.org'),
-        //array('"test"."test"@iana.org'),
-        //array('"test".test@iana.org'),
+        array('"test"."test"@iana.org'),
+        array('"test".test@iana.org'),
+        array('fab\  ien@symfony.com'), // with escaped space + extra invalid space
+        array('"user   ""name"@example.com'), // with quote spaces + invalid quotes
+        array('"test"\ "test"@iana.org'), // invalid quotes
+        array('"test"\ + "test"@iana.org'), // invalid quotes v2
         array('"test"' . chr(0) . '@iana.org'),
         array('"test\"@iana.org'),
         array(chr(226) . '@iana.org'),

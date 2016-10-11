@@ -721,27 +721,61 @@ class EmailCheck
     if (
         !is_string($email) // must be a string
         ||
-        strpos($email, ' ') !== false // no space allowed
-        ||
         strlen($email) >= 320 // make sure string length is limited to avoid DOS attacks
     ) {
       return false;
     }
 
-    $email = str_replace(array('.', '＠'), array('.', '@'), $email); // non-Latin chars are also allowed | https://tools.ietf.org/html/rfc6530
+    $email = str_replace(
+        array(
+            '.', // non-Latin chars are also allowed | https://tools.ietf.org/html/rfc6530
+            '＠', // non-Latin chars are also allowed | https://tools.ietf.org/html/rfc6530
+            '\\ ' // escaped spaces are also allowed
+        ),
+        array(
+            '.',
+            '@',
+            '',
+        ),
+        $email
+    );
+
     if (
-      (strpos($email, '@') === false)
-      ||
-      (strpos($email, '.') === false && strpos($email, ':') === false) // dot or colon is needed
+        (strpos($email, '@') === false)
+        ||
+        (strpos($email, '.') === false && strpos($email, ':') === false) // dot or colon is needed
     ) {
       return false;
     }
 
-    if (!preg_match('/^(.*<?)(.*)@(.*)(>?)$/', $email, $parts)) {
+    if (!preg_match('/^(?<local>.*<?)(?:.*)@(?<domain>.*)(?:>?)$/', $email, $parts)) {
       return false;
     } else {
 
-      list($email, $localFirst, $localSecond, $domain) = $parts;
+      $local = $parts['local'];
+      $domain = $parts['domain'];
+
+      // allow spaces in quotes e.g. "firstname lastname"@foo.bar
+      $quoteHelperForIdn = false;
+      if (preg_match('/^"(?<inner>[^"]*)"$/mU', $local, $parts)) {
+        $quoteHelperForIdn = true;
+        $local = trim(
+            str_replace(
+                $parts['inner'],
+                str_replace(' ', '', $parts['inner']),
+                $local
+            ),
+            '"'
+        );
+      }
+
+      if (
+          strpos($local, ' ') !== false // no spaces allowed, anymore
+          ||
+          strpos($local, '".') !== false // no quote + dot allowed
+      ) {
+        return false;
+      }
 
       if (
           function_exists('idn_to_ascii')
@@ -749,15 +783,17 @@ class EmailCheck
           UTF8::max_chr_width($email) <= 3 // check for unicode chars with more then 3 bytes
       ) {
 
-        $localFirstTmp = idn_to_ascii($localFirst);
-        if ($localFirstTmp) {
-          $localFirst = $localFirstTmp;
+        $localTmp = idn_to_ascii($local);
+        if ($localTmp) {
+          $local = $localTmp;
         }
+        unset($localTmp);
 
         $domainTmp = idn_to_ascii($domain);
         if ($domainTmp) {
           $domain = $domainTmp;
         }
+        unset($domainTmp);
 
       } else {
 
@@ -766,11 +802,15 @@ class EmailCheck
           $punycode = new Punycode();
         }
 
-        $localFirst = $punycode->encode($localFirst);
+        $local = $punycode->encode($local);
         $domain = $punycode->encode($domain);
       }
 
-      $email = $localFirst . $localSecond . '@' . $domain . $parts[4];
+      if ($quoteHelperForIdn === true) {
+        $local = '"' . $local . '"';
+      }
+
+      $email = $local . '@' . $domain;
 
       if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         return false;
