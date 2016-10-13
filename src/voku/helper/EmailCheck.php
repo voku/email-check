@@ -730,12 +730,10 @@ class EmailCheck
         array(
             '.', // non-Latin chars are also allowed | https://tools.ietf.org/html/rfc6530
             '＠', // non-Latin chars are also allowed | https://tools.ietf.org/html/rfc6530
-            '\\ ' // escaped spaces are also allowed
         ),
         array(
             '.',
             '@',
-            '',
         ),
         $email
     );
@@ -754,6 +752,9 @@ class EmailCheck
 
       $local = $parts['local'];
       $domain = $parts['domain'];
+
+      // escaped spaces are also allowed
+      $local = str_replace('\\ ', '', $local);
 
       // allow spaces in quotes e.g. "firstname lastname"@foo.bar
       $quoteHelperForIdn = false;

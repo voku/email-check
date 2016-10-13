@@ -431,6 +431,7 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
         array('user[na]me@example.com'),
         array('"""@iana.org'),
         array('"\"@iana.org'),
+        array('"\ "@i\ ana.org'),
         array('"\\"@iana.org'),
         array('"test"test@iana.org'),
         array('"test""test"@iana.org'),
