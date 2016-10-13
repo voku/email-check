@@ -753,10 +753,10 @@ class EmailCheck
       $local = $parts['local'];
       $domain = $parts['domain'];
 
-      // escaped spaces are also allowed
+      // Escaped spaces are allowed in the "local"-part.
       $local = str_replace('\\ ', '', $local);
 
-      // allow spaces in quotes e.g. "firstname lastname"@foo.bar
+      // Spaces in quotes e.g. "firstname lastname"@foo.bar are also allowed in the "local"-part.
       $quoteHelperForIdn = false;
       if (preg_match('/^"(?<inner>[^"]*)"$/mU', $local, $parts)) {
         $quoteHelperForIdn = true;
