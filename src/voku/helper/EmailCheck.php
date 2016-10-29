@@ -708,23 +708,31 @@ class EmailCheck
   /**
    * Check if the email is valid.
    *
-   * @param string     $email
-   * @param bool|true  $useExampleDomainCheck
-   * @param bool|true  $useTypoInDomainCheck
-   * @param bool|true  $useTemporaryDomainCheck
-   * @param bool|false $useDnsCheck (do not use, if you don't need it)
+   * @param string $email
+   * @param bool   $useExampleDomainCheck
+   * @param bool   $useTypoInDomainCheck
+   * @param bool   $useTemporaryDomainCheck
+   * @param bool   $useDnsCheck (do not use, if you don't need it)
    *
    * @return bool
    */
   public static function isValid($email, $useExampleDomainCheck = false, $useTypoInDomainCheck = false, $useTemporaryDomainCheck = false, $useDnsCheck = false)
   {
+    // must be a string
+    if (!is_string($email)) {
+      return false;
+    }
+
+    // make sure string length is limited to avoid DOS attacks
+    $emailStringLength = strlen($email);
     if (
-        !is_string($email) // must be a string
+        $emailStringLength >= 320
         ||
-        strlen($email) >= 320 // make sure string length is limited to avoid DOS attacks
+        $emailStringLength <= 2 // i@y //
     ) {
       return false;
     }
+    unset($emailStringLength);
 
     $email = str_replace(
         array(
@@ -739,9 +747,9 @@ class EmailCheck
     );
 
     if (
-        (strpos($email, '@') === false)
+        (strpos($email, '@') === false) // "at" is needed
         ||
-        (strpos($email, '.') === false && strpos($email, ':') === false) // dot or colon is needed
+        (strpos($email, '.') === false && strpos($email, ':') === false) // "dot" or "colon" is needed
     ) {
       return false;
     }
