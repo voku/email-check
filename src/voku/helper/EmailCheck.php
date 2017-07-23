@@ -2,6 +2,7 @@
 
 namespace voku\helper;
 
+use TrueBV\Exception\LabelOutOfBoundsException;
 use TrueBV\Punycode;
 
 /**
@@ -756,97 +757,110 @@ class EmailCheck
 
     if (!preg_match('/^(?<local>.*<?)(?:.*)@(?<domain>.*)(?:>?)$/', $email, $parts)) {
       return false;
+    }
+
+    $local = $parts['local'];
+    $domain = $parts['domain'];
+
+    if (!$local) {
+      return false;
+    }
+
+    if (!$domain) {
+      return false;
+    }
+
+    // Escaped spaces are allowed in the "local"-part.
+    $local = str_replace('\\ ', '', $local);
+
+    // Spaces in quotes e.g. "firstname lastname"@foo.bar are also allowed in the "local"-part.
+    $quoteHelperForIdn = false;
+    if (preg_match('/^"(?<inner>[^"]*)"$/mU', $local, $parts)) {
+      $quoteHelperForIdn = true;
+      $local = trim(
+          str_replace(
+              $parts['inner'],
+              str_replace(' ', '', $parts['inner']),
+              $local
+          ),
+          '"'
+      );
+    }
+
+    if (
+        strpos($local, ' ') !== false // no spaces allowed, anymore
+        ||
+        strpos($local, '".') !== false // no quote + dot allowed
+    ) {
+      return false;
+    }
+
+    if (
+        function_exists('idn_to_ascii')
+        &&
+        UTF8::max_chr_width($email) <= 3 // check for unicode chars with more then 3 bytes
+    ) {
+
+      $localTmp = idn_to_ascii($local);
+      if ($localTmp) {
+        $local = $localTmp;
+      }
+      unset($localTmp);
+
+      $domainTmp = idn_to_ascii($domain);
+      if ($domainTmp) {
+        $domain = $domainTmp;
+      }
+      unset($domainTmp);
+
     } else {
 
-      $local = $parts['local'];
-      $domain = $parts['domain'];
-
-      // Escaped spaces are allowed in the "local"-part.
-      $local = str_replace('\\ ', '', $local);
-
-      // Spaces in quotes e.g. "firstname lastname"@foo.bar are also allowed in the "local"-part.
-      $quoteHelperForIdn = false;
-      if (preg_match('/^"(?<inner>[^"]*)"$/mU', $local, $parts)) {
-        $quoteHelperForIdn = true;
-        $local = trim(
-            str_replace(
-                $parts['inner'],
-                str_replace(' ', '', $parts['inner']),
-                $local
-            ),
-            '"'
-        );
+      static $punycode = null;
+      if ($punycode === null) {
+        $punycode = new Punycode();
       }
 
-      if (
-          strpos($local, ' ') !== false // no spaces allowed, anymore
-          ||
-          strpos($local, '".') !== false // no quote + dot allowed
-      ) {
-        return false;
-      }
-
-      if (
-          function_exists('idn_to_ascii')
-          &&
-          UTF8::max_chr_width($email) <= 3 // check for unicode chars with more then 3 bytes
-      ) {
-
-        $localTmp = idn_to_ascii($local);
-        if ($localTmp) {
-          $local = $localTmp;
-        }
-        unset($localTmp);
-
-        $domainTmp = idn_to_ascii($domain);
-        if ($domainTmp) {
-          $domain = $domainTmp;
-        }
-        unset($domainTmp);
-
-      } else {
-
-        static $punycode = null;
-        if ($punycode === null) {
-          $punycode = new Punycode();
-        }
-
+      try {
         $local = $punycode->encode($local);
+      } catch (LabelOutOfBoundsException $e) {
+        $local = '';
+      }
+
+      try {
         $domain = $punycode->encode($domain);
-      }
-
-      if ($quoteHelperForIdn === true) {
-        $local = '"' . $local . '"';
-      }
-
-      $email = $local . '@' . $domain;
-
-      if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        return false;
-      } else {
-        $valid = true;
-      }
-
-      if ($useExampleDomainCheck === true && self::isExampleDomain($domain) === true) {
-        return false;
-      }
-
-      if ($useTypoInDomainCheck === true && self::isTypoInDomain($domain) === true) {
-        return false;
-      }
-
-      if ($useTemporaryDomainCheck === true && self::isTemporaryDomain($domain) === true) {
-        return false;
-      }
-
-      if ($useDnsCheck === true && self::isDnsError($domain) === true) {
-        return false;
+      } catch (LabelOutOfBoundsException $e) {
+        $domain = '';
       }
 
     }
 
+    if ($quoteHelperForIdn === true) {
+      $local = '"' . $local . '"';
+    }
 
-    return $valid;
+    $email = $local . '@' . $domain;
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      return false;
+    }
+
+    if ($useExampleDomainCheck === true && self::isExampleDomain($domain) === true) {
+      return false;
+    }
+
+    if ($useTypoInDomainCheck === true && self::isTypoInDomain($domain) === true) {
+      return false;
+    }
+
+    if ($useTemporaryDomainCheck === true && self::isTemporaryDomain($domain) === true) {
+      return false;
+    }
+
+    if ($useDnsCheck === true && self::isDnsError($domain) === true) {
+      return false;
+    }
+
+    return true;
   }
 
   /**
@@ -860,9 +874,9 @@ class EmailCheck
   {
     if (in_array($domain, self::$domainsExample, true)) {
       return true;
-    } else {
-      return false;
     }
+
+    return false;
   }
 
   /**
@@ -876,9 +890,9 @@ class EmailCheck
   {
     if (in_array($domain, self::$domainsTypo, true)) {
       return true;
-    } else {
-      return false;
     }
+
+    return false;
   }
 
   /**
@@ -892,9 +906,9 @@ class EmailCheck
   {
     if (in_array($domain, self::$domainsTemporary, true)) {
       return true;
-    } else {
-      return false;
     }
+
+    return false;
   }
 
   /**
@@ -910,8 +924,8 @@ class EmailCheck
   {
     if (function_exists('checkdnsrr')) {
       return !checkdnsrr($domain . '.', 'MX') || !checkdnsrr($domain, 'A');
-    } else {
-      throw new \Exception(' Can\'t call checkdnsrr');
     }
+
+    throw new \Exception(' Can\'t call checkdnsrr');
   }
 }
