@@ -807,7 +807,12 @@ class EmailCheck
       }
       unset($localTmp);
 
-      $domainTmp = idn_to_ascii($domain, IDNA_NONTRANSITIONAL_TO_ASCII, INTL_IDNA_VARIANT_UTS46);
+      // https://git.ispconfig.org/ispconfig/ispconfig3/blob/master/interface/lib/classes/functions.inc.php#L305
+      if(defined('IDNA_NONTRANSITIONAL_TO_ASCII') && defined('INTL_IDNA_VARIANT_UTS46') && constant('IDNA_NONTRANSITIONAL_TO_ASCII')) {
+        $domainTmp = idn_to_ascii($domain, IDNA_NONTRANSITIONAL_TO_ASCII, INTL_IDNA_VARIANT_UTS46);
+      } else {
+        $domainTmp = idn_to_ascii($domain);
+      }
       if ($domainTmp) {
         $domain = $domainTmp;
       }
