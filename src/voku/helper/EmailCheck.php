@@ -807,7 +807,7 @@ class EmailCheck
       }
       unset($localTmp);
 
-      $domainTmp = idn_to_ascii($domain);
+      $domainTmp = idn_to_ascii($domain, IDNA_NONTRANSITIONAL_TO_ASCII, INTL_IDNA_VARIANT_UTS46);
       if ($domainTmp) {
         $domain = $domainTmp;
       }

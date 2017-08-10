@@ -31,6 +31,10 @@ matrix:
       env: extension='true'
     - php: 7.0
       env: extension='false'
+    - php: 7.1
+      env: extension='true'
+    - php: 7.1
+      env: extension='false'
 
 before_script:
   - php --version
