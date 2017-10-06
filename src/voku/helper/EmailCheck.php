@@ -11,7 +11,7 @@ use TrueBV\Punycode;
  * -> use "EmailCheck::isValid()" to validate a email-address
  *
  * @author      Lars Moelleken
- * @copyright   Copyright (c) 2015, Lars Moelleken (http://moelleken.org/)
+ * @copyright   Copyright (c) 2017, Lars Moelleken (http://moelleken.org/)
  * @license     http://opensource.org/licenses/MIT	MIT License
  */
 class EmailCheck
@@ -801,14 +801,30 @@ class EmailCheck
         UTF8::max_chr_width($email) <= 3 // check for unicode chars with more then 3 bytes
     ) {
 
-      $localTmp = idn_to_ascii($local);
+      // https://git.ispconfig.org/ispconfig/ispconfig3/blob/master/interface/lib/classes/functions.inc.php#L305
+      if (
+          defined('IDNA_NONTRANSITIONAL_TO_ASCII')
+          &&
+          defined('INTL_IDNA_VARIANT_UTS46')
+          &&
+          constant('IDNA_NONTRANSITIONAL_TO_ASCII')
+      ) {
+        $useIdnaUts46 = true;
+      } else {
+        $useIdnaUts46 = false;
+      }
+
+      if ($useIdnaUts46 === true) {
+        $localTmp = idn_to_ascii($local, IDNA_NONTRANSITIONAL_TO_ASCII, INTL_IDNA_VARIANT_UTS46);
+      } else {
+        $localTmp = idn_to_ascii($local);
+      }
       if ($localTmp) {
         $local = $localTmp;
       }
       unset($localTmp);
 
-      // https://git.ispconfig.org/ispconfig/ispconfig3/blob/master/interface/lib/classes/functions.inc.php#L305
-      if(defined('IDNA_NONTRANSITIONAL_TO_ASCII') && defined('INTL_IDNA_VARIANT_UTS46') && constant('IDNA_NONTRANSITIONAL_TO_ASCII')) {
+      if ($useIdnaUts46 === true) {
         $domainTmp = idn_to_ascii($domain, IDNA_NONTRANSITIONAL_TO_ASCII, INTL_IDNA_VARIANT_UTS46);
       } else {
         $domainTmp = idn_to_ascii($domain);
