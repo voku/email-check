@@ -35,7 +35,11 @@ matrix:
       env: extension='true'
     - php: 7.1
       env: extension='false'
-
+    - php: 7.2
+      env: extension='true'
+    - php: 7.2
+      env: extension='false'
+      
 before_script:
   - php --version
   - mkdir -p $(dirname ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini)
