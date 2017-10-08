@@ -19,17 +19,17 @@ class EmailCheck
   /**
    * @var null|array
    */
-  public static $domainsExample = null;
+  protected static $domainsExample = null;
 
   /**
    * @var null|array
    */
-  public static $domainsTemporary = null;
+  protected static $domainsTemporary = null;
 
   /**
    * @var null|array
    */
-  public static $domainsTypo = null;
+  protected static $domainsTypo = null;
 
   /**
    * @var bool
@@ -281,13 +281,14 @@ class EmailCheck
    *
    * @return bool|string|array|int <p>Will return false on error.</p>
    */
-  private static function getData($file)
+  protected static function getData($file)
   {
     $file = __DIR__ . '/data/' . $file . '.php';
     if (file_exists($file)) {
       /** @noinspection PhpIncludeInspection */
       return require $file;
     }
+
     return false;
   }
 
