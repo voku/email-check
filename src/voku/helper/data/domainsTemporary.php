@@ -8,7 +8,7 @@
  * - https://gist.github.com/michenriksen/8710649
  */
 
-static $data = array(
+static $data = [
     '0-mail.com',
     '001.igg.biz',
     '027168.com',
@@ -2379,8 +2379,9 @@ static $data = array(
     'zxcvbnm.com',
     'zxcxc.com',
     'zzz.com',
-);
+];
 
 $result =& $data;
 unset($data);
+
 return $result;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace voku\helper;
 
 use TrueBV\Exception\LabelOutOfBoundsException;
@@ -47,15 +49,15 @@ class EmailCheck
    *
    * @return bool
    */
-  public static function isValid($email, $useExampleDomainCheck = false, $useTypoInDomainCheck = false, $useTemporaryDomainCheck = false, $useDnsCheck = false)
+  public static function isValid(string $email, bool $useExampleDomainCheck = false, bool $useTypoInDomainCheck = false, bool $useTemporaryDomainCheck = false, bool $useDnsCheck = false): bool
   {
     // must be a string
-    if (!is_string($email)) {
+    if (!\is_string($email)) {
       return false;
     }
 
     // make sure string length is limited to avoid DOS attacks
-    $emailStringLength = strlen($email);
+    $emailStringLength = \strlen($email);
     if (
         $emailStringLength >= 320
         ||
@@ -65,27 +67,27 @@ class EmailCheck
     }
     unset($emailStringLength);
 
-    $email = str_replace(
-        array(
+    $email = \str_replace(
+        [
             '.', // non-Latin chars are also allowed | https://tools.ietf.org/html/rfc6530
             '＠', // non-Latin chars are also allowed | https://tools.ietf.org/html/rfc6530
-        ),
-        array(
+        ],
+        [
             '.',
             '@',
-        ),
+        ],
         $email
     );
 
     if (
-        (strpos($email, '@') === false) // "at" is needed
+        (\strpos($email, '@') === false) // "at" is needed
         ||
-        (strpos($email, '.') === false && strpos($email, ':') === false) // "dot" or "colon" is needed
+        (\strpos($email, '.') === false && \strpos($email, ':') === false) // "dot" or "colon" is needed
     ) {
       return false;
     }
 
-    if (!preg_match('/^(?<local>.*<?)(?:.*)@(?<domain>.*)(?:>?)$/', $email, $parts)) {
+    if (!\preg_match('/^(?<local>.*<?)(?:.*)@(?<domain>.*)(?:>?)$/', $email, $parts)) {
       return false;
     }
 
@@ -101,16 +103,16 @@ class EmailCheck
     }
 
     // Escaped spaces are allowed in the "local"-part.
-    $local = str_replace('\\ ', '', $local);
+    $local = \str_replace('\\ ', '', $local);
 
     // Spaces in quotes e.g. "firstname lastname"@foo.bar are also allowed in the "local"-part.
     $quoteHelperForIdn = false;
-    if (preg_match('/^"(?<inner>[^"]*)"$/mU', $local, $parts)) {
+    if (\preg_match('/^"(?<inner>[^"]*)"$/mU', $local, $parts)) {
       $quoteHelperForIdn = true;
-      $local = trim(
-          str_replace(
+      $local = \trim(
+          \str_replace(
               $parts['inner'],
-              str_replace(' ', '', $parts['inner']),
+              \str_replace(' ', '', $parts['inner']),
               $local
           ),
           '"'
@@ -118,26 +120,167 @@ class EmailCheck
     }
 
     if (
-        strpos($local, ' ') !== false // no spaces allowed, anymore
+        \strpos($local, ' ') !== false // no spaces allowed, anymore
         ||
-        strpos($local, '".') !== false // no quote + dot allowed
+        \strpos($local, '".') !== false // no quote + dot allowed
     ) {
       return false;
     }
 
+    list($local, $domain) = self::punnycode($local, $domain);
+
+    if ($quoteHelperForIdn === true) {
+      $local = '"' . $local . '"';
+    }
+
+    $email = $local . '@' . $domain;
+
+    if (!\filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      return false;
+    }
+
+    if ($useExampleDomainCheck === true && self::isExampleDomain($domain) === true) {
+      return false;
+    }
+
+    if ($useTypoInDomainCheck === true && self::isTypoInDomain($domain) === true) {
+      return false;
+    }
+
+    if ($useTemporaryDomainCheck === true && self::isTemporaryDomain($domain) === true) {
+      return false;
+    }
+
+    if ($useDnsCheck === true && self::isDnsError($domain) === true) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Check if the domain is a example domain.
+   *
+   * @param string $domain
+   *
+   * @return bool
+   */
+  public static function isExampleDomain($domain): bool
+  {
+    if (self::$domainsExample === null) {
+      self::$domainsExample = self::getData('domainsExample');
+    }
+
+    if (\in_array($domain, self::$domainsExample, true)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Check if the domain has a typo.
+   *
+   * @param string $domain
+   *
+   * @return bool
+   */
+  public static function isTypoInDomain($domain): bool
+  {
+    if (self::$domainsTypo === null) {
+      self::$domainsTypo = self::getData('domainsTypo');
+    }
+
+    if (\in_array($domain, self::$domainsTypo, true)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Check if the domain is a temporary domain.
+   *
+   * @param string $domain
+   *
+   * @return bool
+   */
+  public static function isTemporaryDomain($domain): bool
+  {
+    if (self::$domainsTemporary === null) {
+      self::$domainsTemporary = self::getData('domainsTemporary');
+    }
+
+    if (\in_array($domain, self::$domainsTemporary, true)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * get data from "/data/*.php"
+   *
+   * @param string $file
+   *
+   * @return bool|string|array|int <p>Will return false on error.</p>
+   */
+  protected static function getData($file)
+  {
+    $file = __DIR__ . '/data/' . $file . '.php';
+    if (\file_exists($file)) {
+      /** @noinspection PhpIncludeInspection */
+      return require $file;
+    }
+
+    return false;
+  }
+
+  /**
+   * Check if the domain has a typo.
+   *
+   * @param string $domain
+   *
+   * @return bool|null will return null if we can't use the "checkdnsrr"-function
+   *
+   * @throws \Exception
+   */
+  public static function isDnsError($domain)
+  {
+    if (\function_exists('checkdnsrr')) {
+      return !\checkdnsrr($domain . '.', 'MX') || !\checkdnsrr($domain, 'A');
+    }
+
+    throw new \Exception(' Can\'t call checkdnsrr');
+  }
+
+  /**
+   * @param string $local
+   * @param string $domain
+   *
+   * @return array
+   */
+  private static function punnycode(string $local, string $domain): array
+  {
+    $max_chr_width = UTF8::max_chr_width($local . $domain);
+
+    if ($max_chr_width <= 1) {
+      return [$local, $domain];
+    }
+
     if (
-        function_exists('idn_to_ascii')
+        $max_chr_width <= 3 // check for unicode chars with more then 3 bytes
         &&
-        UTF8::max_chr_width($email) <= 3 // check for unicode chars with more then 3 bytes
+        \function_exists('idn_to_ascii')
     ) {
 
       // https://git.ispconfig.org/ispconfig/ispconfig3/blob/master/interface/lib/classes/functions.inc.php#L305
       if (
-          defined('IDNA_NONTRANSITIONAL_TO_ASCII')
+          \defined('IDNA_NONTRANSITIONAL_TO_ASCII')
           &&
-          defined('INTL_IDNA_VARIANT_UTS46')
+          \defined('INTL_IDNA_VARIANT_UTS46')
           &&
-          constant('IDNA_NONTRANSITIONAL_TO_ASCII')
+          \constant('IDNA_NONTRANSITIONAL_TO_ASCII')
       ) {
         $useIdnaUts46 = true;
       } else {
@@ -185,128 +328,6 @@ class EmailCheck
 
     }
 
-    if ($quoteHelperForIdn === true) {
-      $local = '"' . $local . '"';
-    }
-
-    $email = $local . '@' . $domain;
-
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-      return false;
-    }
-
-    if ($useExampleDomainCheck === true && self::isExampleDomain($domain) === true) {
-      return false;
-    }
-
-    if ($useTypoInDomainCheck === true && self::isTypoInDomain($domain) === true) {
-      return false;
-    }
-
-    if ($useTemporaryDomainCheck === true && self::isTemporaryDomain($domain) === true) {
-      return false;
-    }
-
-    if ($useDnsCheck === true && self::isDnsError($domain) === true) {
-      return false;
-    }
-
-    return true;
-  }
-
-  /**
-   * Check if the domain is a example domain.
-   *
-   * @param string $domain
-   *
-   * @return bool
-   */
-  public static function isExampleDomain($domain)
-  {
-    if (self::$domainsExample === null) {
-      self::$domainsExample = self::getData('domainsExample');
-    }
-
-    if (in_array($domain, self::$domainsExample, true)) {
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * Check if the domain has a typo.
-   *
-   * @param string $domain
-   *
-   * @return bool
-   */
-  public static function isTypoInDomain($domain)
-  {
-    if (self::$domainsTypo === null) {
-      self::$domainsTypo = self::getData('domainsTypo');
-    }
-
-    if (in_array($domain, self::$domainsTypo, true)) {
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * Check if the domain is a temporary domain.
-   *
-   * @param string $domain
-   *
-   * @return bool
-   */
-  public static function isTemporaryDomain($domain)
-  {
-    if (self::$domainsTemporary === null) {
-      self::$domainsTemporary = self::getData('domainsTemporary');
-    }
-
-    if (in_array($domain, self::$domainsTemporary, true)) {
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * get data from "/data/*.php"
-   *
-   * @param string $file
-   *
-   * @return bool|string|array|int <p>Will return false on error.</p>
-   */
-  protected static function getData($file)
-  {
-    $file = __DIR__ . '/data/' . $file . '.php';
-    if (file_exists($file)) {
-      /** @noinspection PhpIncludeInspection */
-      return require $file;
-    }
-
-    return false;
-  }
-
-  /**
-   * Check if the domain has a typo.
-   *
-   * @param string $domain
-   *
-   * @return bool|null will return null if we can't use the "checkdnsrr"-function
-   *
-   * @throws \Exception
-   */
-  public static function isDnsError($domain)
-  {
-    if (function_exists('checkdnsrr')) {
-      return !checkdnsrr($domain . '.', 'MX') || !checkdnsrr($domain, 'A');
-    }
-
-    throw new \Exception(' Can\'t call checkdnsrr');
+    return [$local, $domain];
   }
 }

@@ -1,6 +1,6 @@
 <?php
 
-static $data = array(
+static $data = [
     'test.de',
     'test.com',
     'test.net',
@@ -9,8 +9,9 @@ static $data = array(
     'example.com',
     'example.net',
     'example.org',
-);
+];
 
 $result =& $data;
 unset($data);
+
 return $result;

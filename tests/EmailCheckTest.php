@@ -8,7 +8,7 @@ use voku\helper\EmailCheck;
  *
  * - https://isemail.info/_system/is_email/test/?all
  */
-class EmailCheckTest extends \PHPUnit_Framework_TestCase
+class EmailCheckTest extends \PHPUnit\Framework\TestCase
 {
 
   /**
@@ -30,7 +30,7 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
   {
     $idnToAsciiFunctionExists = function_exists('idn_to_ascii');
 
-    $testArrayOk = array(
+    $testArrayOk = [
         'sdsaaluzbr70l@a5k-nig8t2.com',
         'b25m_7m@amaaxtyy.com',
         'xktpwt4611mpb2r@2s2znczzc.com',
@@ -101,9 +101,9 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
         'aluzbö70l@a5k-nig8t2.com',
         '8imt§3g_1g4y@se§25ü4o7.comv',
         'tworzenieweb+hans.müller@gmail.com',
-    );
+    ];
 
-    $testArrayFail = array(
+    $testArrayFail = [
         'test@test.com',
         'test@example.com',
         '@amaaxtyy.com',
@@ -136,7 +136,7 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
         'fca05s6e_2@-online.de',
         'vkqwqlgfrjfna@+++,com',
         'foobsadar%40live.de',
-    );
+    ];
 
     self::assertSame(false, EmailCheck::isValid(''));
 
@@ -177,19 +177,19 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
 
   public function testIsDnsError()
   {
-    $testArrayFalse = array(
+    $testArrayFalse = [
         'dsadsadasdvgffdee-foo.de',
         'ääääääöüüüüüüfoo.com',
-    );
+    ];
 
     foreach ($testArrayFalse as $domain) {
       self::assertSame(true, EmailCheck::isDnsError($domain), $domain);
     }
 
-    $testArrayTrue = array(
+    $testArrayTrue = [
         'gmail.com',
         'aol.com',
-    );
+    ];
 
     foreach ($testArrayTrue as $domain) {
       self::assertSame(false, EmailCheck::isDnsError($domain), $domain);
@@ -198,19 +198,19 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
 
   public function testIsTemporaryDomain()
   {
-    $testArrayFalse = array(
+    $testArrayFalse = [
         'gmail.com',
         'aol.com',
-    );
+    ];
 
     foreach ($testArrayFalse as $domain) {
       self::assertSame(false, EmailCheck::isTemporaryDomain($domain), $domain);
     }
 
-    $testArrayTrue = array(
+    $testArrayTrue = [
         '10minutemail.com',
         '20minutemail.com',
-    );
+    ];
 
     foreach ($testArrayTrue as $domain) {
       self::assertSame(true, EmailCheck::isTemporaryDomain($domain), $domain);
@@ -219,19 +219,19 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
 
   public function testIsTypoInDomain()
   {
-    $testArrayFalse = array(
+    $testArrayFalse = [
         'gmail.com',
         'aol.com',
-    );
+    ];
 
     foreach ($testArrayFalse as $domain) {
       self::assertSame(false, EmailCheck::isTypoInDomain($domain), $domain);
     }
 
-    $testArrayTrue = array(
+    $testArrayTrue = [
         'aol.con',
         'ao.com',
-    );
+    ];
 
     foreach ($testArrayTrue as $domain) {
       self::assertSame(true, EmailCheck::isTypoInDomain($domain), $domain);
@@ -247,25 +247,25 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
 
     // ---
 
-    $isValid = array();
-    $a = microtime(true);
+    $isValid = [];
+    $a = \microtime(true);
     for ($i = 0; $i < $iterations; $i++) {
-      $isValid[] = filter_var($testingMail, FILTER_VALIDATE_EMAIL);
+      $isValid[] = \filter_var($testingMail, FILTER_VALIDATE_EMAIL);
     }
-    $b = microtime(true);
-    self::assertEquals(false, in_array(false, $isValid, true));
-    echo($b - $a) . ' seconds with filter_var' . PHP_EOL;
+    $b = \microtime(true);
+    self::assertEquals(false, \in_array(false, $isValid, true));
+    echo ($b - $a) . ' seconds with filter_var' . PHP_EOL;
 
     // ---
 
-    $isValid = array();
-    $a = microtime(true);
+    $isValid = [];
+    $a = \microtime(true);
     for ($i = 0; $i < $iterations; $i++) {
       $isValid[] = EmailCheck::isValid($testingMail);
     }
-    $b = microtime(true);
-    self::assertEquals(false, in_array(false, $isValid, true));
-    echo($b - $a) . ' seconds with EmailCheck' . PHP_EOL;
+    $b = \microtime(true);
+    self::assertEquals(false, \in_array(false, $isValid, true));
+    echo ($b - $a) . ' seconds with EmailCheck' . PHP_EOL;
 
     // ---
   }
@@ -329,45 +329,45 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
    */
   public function getValidEmails()
   {
-    return array(
-        array('!#$%&`*+/=?^`{|}~@iana.org'),
-        array('test@io.io'),
-        array('â@iana.org'),
-        array('contato@myemail.com.br'),
-        array('fabien@symfony.com'),
-        array('example@example.co.uk'),
-        array('fabien_potencier@example.fr'),
-        array('fab\'ien@symfony.com'),
-        array('example@fakedfake.co.uk'),
-        array('example@faked.fake.co.uk'),
-        array('fabien+@symfony.com'),
-        array('инфо@письмо.рф'),
-        array('"username"@example.com'),
-        array('"user,name"@example.com'),
-        array('"user+name"@example.com'),
-        array('fab\ ien@symfony.com'),
-        array('"user name"@example.com'),
-        array('"test\ test"@iana.org'),
-        array('test@[255.255.255.255]'),
-        array('test@[IPv6:1111:2222:3333:4444:5555:6666:7777:8888]'),
-        array('!#$%&`*+/=?^`{|}~@[IPv6:1111:2222:3333:4444::255.255.255.255]'),
-        array('foobar@foobar.foo.ws'),
-        array('武＠メール.グーグル'),
-        array('foobar@😍🎻😸🎩🎱🎮🍟🐝.🍕💩.ws'),
-        array('"user@name"@example.com'),
-        array('"\a"@iana.org'),
-        array('""@iana.org'),
-        array('"\""@iana.org'),
-        array('müller@möller.de'),
-        array('m.üller@möller.de'),
-        array('"meuller m"@möller.de'),
-        array('"müller m"@möller.de'),
-        array('test@email.com.au'),
-        array('123@iana.org'),
-        array('test@123.com'),
-        array('abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghiklm@iana.org'),
-        array('test@xn--hxajbheg2az3al.xn--jxalpdlp'),
-    );
+    return [
+        ['!#$%&`*+/=?^`{|}~@iana.org'],
+        ['test@io.io'],
+        ['â@iana.org'],
+        ['contato@myemail.com.br'],
+        ['fabien@symfony.com'],
+        ['example@example.co.uk'],
+        ['fabien_potencier@example.fr'],
+        ['fab\'ien@symfony.com'],
+        ['example@fakedfake.co.uk'],
+        ['example@faked.fake.co.uk'],
+        ['fabien+@symfony.com'],
+        ['инфо@письмо.рф'],
+        ['"username"@example.com'],
+        ['"user,name"@example.com'],
+        ['"user+name"@example.com'],
+        ['fab\ ien@symfony.com'],
+        ['"user name"@example.com'],
+        ['"test\ test"@iana.org'],
+        ['test@[255.255.255.255]'],
+        ['test@[IPv6:1111:2222:3333:4444:5555:6666:7777:8888]'],
+        ['!#$%&`*+/=?^`{|}~@[IPv6:1111:2222:3333:4444::255.255.255.255]'],
+        ['foobar@foobar.foo.ws'],
+        ['武＠メール.グーグル'],
+        ['foobar@😍🎻😸🎩🎱🎮🍟🐝.🍕💩.ws'],
+        ['"user@name"@example.com'],
+        ['"\a"@iana.org'],
+        ['""@iana.org'],
+        ['"\""@iana.org'],
+        ['müller@möller.de'],
+        ['m.üller@möller.de'],
+        ['"meuller m"@möller.de'],
+        ['"müller m"@möller.de'],
+        ['test@email.com.au'],
+        ['123@iana.org'],
+        ['test@123.com'],
+        ['abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghiklm@iana.org'],
+        ['test@xn--hxajbheg2az3al.xn--jxalpdlp'],
+    ];
   }
 
   /**
@@ -386,95 +386,95 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
    */
   public function getInvalidEmails()
   {
-    return array(
-        array(''), // Address has no domain part
-        array('test'), // Address has no domain part
-        array('@'), // Address has no local part
-        array('test@'), // Address has no domain part
-        array('@iana.org'), // Address has no local part
-        array('.test@iana.org'), // Neither part of the address may begin with a dot
-        array('test.@iana.org'), // Neither part of the address may end with a dot
-        array('test..iana.org'), // The address may not contain consecutive dots
-        array('test\@test@iana.org'), // Address contains a character that is not allowed
-        array('test@a[255.255.255.255]'), // Address contains a character that is not allowed
-        array('test@[255.255.255]'), // The domain literal is not a valid RFC 5321 address literal
-        array('test@[255.255.255.255.255]'), // The domain literal is not a valid RFC 5321 address literal
-        array('test@[255.255.255.256]'), // The domain literal is not a valid RFC 5321 address literal
-        array('test@[1111:2222:3333:4444:5555:6666:7777:8888]'),
-        array('test@[IPv6:1111:2222:3333:4444:5555:6666:7777]'),
-        array('test@[IPv6:1111:2222:3333:4444:5555:6666:7777:8888:9999]'),
-        array('test@[IPv6:1111:2222:3333:4444:5555:6666:7777:888G]'),
-        array('test@email*'),
-        array('test@email!'),
-        array('test@email&'),
-        array('test@email^'),
-        array('test@email%'),
-        array('test@email$'),
-        array('test@example.com test'),
-        array('user  name@example.com'),
-        array('user   name@example.com'),
-        array('example.@example.co.uk'),
-        array('example@example@example.co.uk'),
-        array('(test_exampel@example.fr)'),
-        array('example(example)example@example.co.uk'),
-        array('example@localhost'), // RFC5321
-        array('.example@localhost'),
-        array('ex\ample@localhost'),
-        array('example@local\host'),
-        array('example@localhost.'),
-        array('user name@example.com'),
-        array('username@ example . com'),
-        array('example@(fake).com'),
-        array('example@(fake.com'),
-        array('username@example,com'),
-        array('usern,ame@example.com'),
-        array('user[na]me@example.com'),
-        array('"""@iana.org'),
-        array('"\"@iana.org'),
-        array('"\ "@i\ ana.org'),
-        array('"\\"@iana.org'),
-        array('"test"test@iana.org'),
-        array('"test""test"@iana.org'),
-        array('"test"."test"@iana.org'),
-        array('"test".test@iana.org'),
-        array('fab\  ien@symfony.com'), // with escaped space + extra invalid space
-        array('"user   ""name"@example.com'), // with quote spaces + invalid quotes
-        array('"test"\ "test"@iana.org'), // invalid quotes
-        array('"test"\ + "test"@iana.org'), // invalid quotes v2
-        array('"test"' . chr(0) . '@iana.org'),
-        array('"test\"@iana.org'),
+    return [
+        [''], // Address has no domain part
+        ['test'], // Address has no domain part
+        ['@'], // Address has no local part
+        ['test@'], // Address has no domain part
+        ['@iana.org'], // Address has no local part
+        ['.test@iana.org'], // Neither part of the address may begin with a dot
+        ['test.@iana.org'], // Neither part of the address may end with a dot
+        ['test..iana.org'], // The address may not contain consecutive dots
+        ['test\@test@iana.org'], // Address contains a character that is not allowed
+        ['test@a[255.255.255.255]'], // Address contains a character that is not allowed
+        ['test@[255.255.255]'], // The domain literal is not a valid RFC 5321 address literal
+        ['test@[255.255.255.255.255]'], // The domain literal is not a valid RFC 5321 address literal
+        ['test@[255.255.255.256]'], // The domain literal is not a valid RFC 5321 address literal
+        ['test@[1111:2222:3333:4444:5555:6666:7777:8888]'],
+        ['test@[IPv6:1111:2222:3333:4444:5555:6666:7777]'],
+        ['test@[IPv6:1111:2222:3333:4444:5555:6666:7777:8888:9999]'],
+        ['test@[IPv6:1111:2222:3333:4444:5555:6666:7777:888G]'],
+        ['test@email*'],
+        ['test@email!'],
+        ['test@email&'],
+        ['test@email^'],
+        ['test@email%'],
+        ['test@email$'],
+        ['test@example.com test'],
+        ['user  name@example.com'],
+        ['user   name@example.com'],
+        ['example.@example.co.uk'],
+        ['example@example@example.co.uk'],
+        ['(test_exampel@example.fr)'],
+        ['example(example)example@example.co.uk'],
+        ['example@localhost'], // RFC5321
+        ['.example@localhost'],
+        ['ex\ample@localhost'],
+        ['example@local\host'],
+        ['example@localhost.'],
+        ['user name@example.com'],
+        ['username@ example . com'],
+        ['example@(fake).com'],
+        ['example@(fake.com'],
+        ['username@example,com'],
+        ['usern,ame@example.com'],
+        ['user[na]me@example.com'],
+        ['"""@iana.org'],
+        ['"\"@iana.org'],
+        ['"\ "@i\ ana.org'],
+        ['"\\"@iana.org'],
+        ['"test"test@iana.org'],
+        ['"test""test"@iana.org'],
+        ['"test"."test"@iana.org'],
+        ['"test".test@iana.org'],
+        ['fab\  ien@symfony.com'], // with escaped space + extra invalid space
+        ['"user   ""name"@example.com'], // with quote spaces + invalid quotes
+        ['"test"\ "test"@iana.org'], // invalid quotes
+        ['"test"\ + "test"@iana.org'], // invalid quotes v2
+        ['"test"' . chr(0) . '@iana.org'],
+        ['"test\"@iana.org'],
         //array(chr(226) . '@iana.org'), // TODO?
-        array('test@' . chr(226) . '.org'),
-        array('\r\ntest@iana.org'),
-        array('\r\n test@iana.org'),
-        array('\r\n \r\ntest@iana.org'),
-        array('\r\n \r\ntest@iana.org'),
-        array('\r\n \r\n test@iana.org'),
-        array('test@iana.org \r\n'),
-        array('test@iana.org \r\n '),
-        array('test@iana.org \r\n \r\n'),
-        array('test@iana.org \r\n\r\n'),
-        array('test@iana.org  \r\n\r\n '),
-        array("\r\ntest@iana.org"),
-        array("\r\n test@iana.org"),
-        array("\r\n \r\ntest@iana.org"),
-        array("\r\n \r\ntest@iana.org"),
-        array("\r\n \r\n test@iana.org"),
-        array("test@iana.org \r\n"),
-        array("test@iana.org \r\n "),
-        array("test@iana.org \r\n \r\n"),
-        array("test@iana.org \r\n\r\n"),
-        array("test@iana.org  \r\n\r\n "),
-        array('test@foo;bar.com'),
-        array('test;123@foobar.com'),
-        array('test@example..com'),
-        array('email.email@email."'),
-        array('test@email>'),
-        array('test@email<'),
-        array('test@email{'),
-        array('test@email.com]'),
-        array('test@ema[il.com'),
-    );
+        ['test@' . chr(226) . '.org'],
+        ['\r\ntest@iana.org'],
+        ['\r\n test@iana.org'],
+        ['\r\n \r\ntest@iana.org'],
+        ['\r\n \r\ntest@iana.org'],
+        ['\r\n \r\n test@iana.org'],
+        ['test@iana.org \r\n'],
+        ['test@iana.org \r\n '],
+        ['test@iana.org \r\n \r\n'],
+        ['test@iana.org \r\n\r\n'],
+        ['test@iana.org  \r\n\r\n '],
+        ["\r\ntest@iana.org"],
+        ["\r\n test@iana.org"],
+        ["\r\n \r\ntest@iana.org"],
+        ["\r\n \r\ntest@iana.org"],
+        ["\r\n \r\n test@iana.org"],
+        ["test@iana.org \r\n"],
+        ["test@iana.org \r\n "],
+        ["test@iana.org \r\n \r\n"],
+        ["test@iana.org \r\n\r\n"],
+        ["test@iana.org  \r\n\r\n "],
+        ['test@foo;bar.com'],
+        ['test;123@foobar.com'],
+        ['test@example..com'],
+        ['email.email@email."'],
+        ['test@email>'],
+        ['test@email<'],
+        ['test@email{'],
+        ['test@email.com]'],
+        ['test@ema[il.com'],
+    ];
   }
 
   /**
@@ -493,38 +493,38 @@ class EmailCheckTest extends \PHPUnit_Framework_TestCase
    */
   public function getInvalidEmailsWithDnsCheck()
   {
-    return array(
-        array('example@dfsdfsdfdsfsdfsdf.co.uk',),
-        array('example@ dfsdfsdfdsfsdfsdf.co.uk',),
-        array('example@example(examplecomment).co.uk',),
-        array('example(examplecomment)@example.co.uk',),
-        array("\"\t\"@dfsdfsdfdsfsdfsdf.co.uk",),
-        array("\"\r\"@dfsdfsdfdsfsdfsdf.co.uk",),
-        array('example@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334]',),
-        array('example@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370::]',),
-        array('example@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334::]',),
-        array('example@[IPv6:1::1::1]',),
-        array("example@[\n]",),
-        array('example@[::1]',),
-        array('example@[::123.45.67.178]',),
-        array('example@[IPv6::2001:0db8:85a3:0000:0000:8a2e:0370:7334]',),
-        array('example@[IPv6:z001:0db8:85a3:0000:0000:8a2e:0370:7334]',),
-        array('example@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:]',),
-        array('"example"@dfsdfsdfdsfsdfsdf.co.uk',),
-        array('too_long_localpart_too_long_localpart_too_long_localpart_too_long_localpart@dfsdfsdfdsfsdfsdf.co.uk',),
-        array('example@toolonglocalparttoolonglocalparttoolonglocalparttoolonglocalpart.co.uk',),
-        array(
+    return [
+        ['example@dfsdfsdfdsfsdfsdf.co.uk',],
+        ['example@ dfsdfsdfdsfsdfsdf.co.uk',],
+        ['example@example(examplecomment).co.uk',],
+        ['example(examplecomment)@example.co.uk',],
+        ["\"\t\"@dfsdfsdfdsfsdfsdf.co.uk",],
+        ["\"\r\"@dfsdfsdfdsfsdfsdf.co.uk",],
+        ['example@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334]',],
+        ['example@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370::]',],
+        ['example@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334::]',],
+        ['example@[IPv6:1::1::1]',],
+        ["example@[\n]",],
+        ['example@[::1]',],
+        ['example@[::123.45.67.178]',],
+        ['example@[IPv6::2001:0db8:85a3:0000:0000:8a2e:0370:7334]',],
+        ['example@[IPv6:z001:0db8:85a3:0000:0000:8a2e:0370:7334]',],
+        ['example@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:]',],
+        ['"example"@dfsdfsdfdsfsdfsdf.co.uk',],
+        ['too_long_localpart_too_long_localpart_too_long_localpart_too_long_localpart@dfsdfsdfdsfsdfsdf.co.uk',],
+        ['example@toolonglocalparttoolonglocalparttoolonglocalparttoolonglocalpart.co.uk',],
+        [
             'example@toolonglocalparttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocal' .
             'parttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocalpart' .
             'toolonglocalparttoolonglocalparttoolonglocalparttoolonglocalpart',
-        ),
-        array(
+        ],
+        [
             'example@toolonglocalparttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocal' .
             'parttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocalparttoolonglocalpart' .
             'toolonglocalparttoolonglocalparttoolonglocalparttoolonglocalpar',
-        ),
-        array('test@test',),
-        array('"test"@test',),
-    );
+        ],
+        ['test@test',],
+        ['"test"@test',],
+    ];
   }
 }
