@@ -165,7 +165,7 @@ class EmailCheck
    *
    * @return bool
    */
-  public static function isExampleDomain($domain): bool
+  public static function isExampleDomain(string $domain): bool
   {
     if (self::$domainsExample === null) {
       self::$domainsExample = self::getData('domainsExample');
@@ -185,7 +185,7 @@ class EmailCheck
    *
    * @return bool
    */
-  public static function isTypoInDomain($domain): bool
+  public static function isTypoInDomain(string $domain): bool
   {
     if (self::$domainsTypo === null) {
       self::$domainsTypo = self::getData('domainsTypo');
@@ -205,7 +205,7 @@ class EmailCheck
    *
    * @return bool
    */
-  public static function isTemporaryDomain($domain): bool
+  public static function isTemporaryDomain(string $domain): bool
   {
     if (self::$domainsTemporary === null) {
       self::$domainsTemporary = self::getData('domainsTemporary');
@@ -225,7 +225,7 @@ class EmailCheck
    *
    * @return bool|string|array|int <p>Will return false on error.</p>
    */
-  protected static function getData($file)
+  protected static function getData(string $file)
   {
     $file = __DIR__ . '/data/' . $file . '.php';
     if (\file_exists($file)) {
@@ -245,7 +245,7 @@ class EmailCheck
    *
    * @throws \Exception
    */
-  public static function isDnsError($domain)
+  public static function isDnsError(string $domain)
   {
     if (\function_exists('checkdnsrr')) {
       return !\checkdnsrr($domain . '.', 'MX') || !\checkdnsrr($domain, 'A');
