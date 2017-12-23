@@ -254,7 +254,7 @@ class EmailCheckTest extends \PHPUnit\Framework\TestCase
     }
     $b = \microtime(true);
     self::assertEquals(false, \in_array(false, $isValid, true));
-    echo ($b - $a) . ' seconds with filter_var' . PHP_EOL;
+    echo($b - $a) . ' seconds with filter_var' . PHP_EOL;
 
     // ---
 
@@ -265,7 +265,7 @@ class EmailCheckTest extends \PHPUnit\Framework\TestCase
     }
     $b = \microtime(true);
     self::assertEquals(false, \in_array(false, $isValid, true));
-    echo ($b - $a) . ' seconds with EmailCheck' . PHP_EOL;
+    echo($b - $a) . ' seconds with EmailCheck' . PHP_EOL;
 
     // ---
   }
