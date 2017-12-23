@@ -3,10 +3,10 @@ Changelog
 
 3.0.0 (2017-12-23)
 
-- update "Portable UTF8" from v4 -> v5
+- remove "Portable UTF8"
 
   -> this is a breaking change without API-changes - but the requirement
-  from "Portable UTF8" has been changed (it no longer requires all polyfills from Symfony)
+  from "Portable UTF8" has been deleted
 
 
 2.0.0 (2017-12-01)

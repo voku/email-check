@@ -262,17 +262,7 @@ class EmailCheck
    */
   private static function punnycode(string $local, string $domain): array
   {
-    $max_chr_width = UTF8::max_chr_width($local . $domain);
-
-    if ($max_chr_width <= 1) {
-      return [$local, $domain];
-    }
-
-    if (
-        $max_chr_width <= 3 // check for unicode chars with more then 3 bytes
-        &&
-        \function_exists('idn_to_ascii')
-    ) {
+    if (\function_exists('idn_to_ascii')) {
 
       // https://git.ispconfig.org/ispconfig/ispconfig3/blob/master/interface/lib/classes/functions.inc.php#L305
       if (

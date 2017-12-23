@@ -21,7 +21,6 @@
   ],
   "require": {
     "php": ">=7.0.0",
-    "voku/portable-utf8": "~5.0",
     "true/punycode": "~2.1"
   },
   "require-dev": {
