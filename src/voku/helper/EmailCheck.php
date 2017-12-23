@@ -237,15 +237,15 @@ class EmailCheck
   }
 
   /**
-   * Check if the domain has a typo.
+   * Check if the domain has a MX- or A-record in the DNS.
    *
    * @param string $domain
    *
-   * @return bool|null will return null if we can't use the "checkdnsrr"-function
+   * @return bool
    *
    * @throws \Exception
    */
-  public static function isDnsError(string $domain)
+  public static function isDnsError(string $domain): bool
   {
     if (\function_exists('checkdnsrr')) {
       return !\checkdnsrr($domain . '.', 'MX') || !\checkdnsrr($domain, 'A');
