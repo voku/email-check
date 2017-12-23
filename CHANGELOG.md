@@ -6,7 +6,7 @@ Changelog
 - remove "Portable UTF8"
 
   -> this is a breaking change without API-changes - but the requirement
-  from "Portable UTF8" has been deleted
+  from "Portable UTF8" has been removed
 
 
 2.0.0 (2017-12-01)
