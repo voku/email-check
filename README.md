@@ -11,6 +11,10 @@
 
 # E-Mail Address Validator for PHP
 
+## Warning
+
+The best way to validate an e-mail address is still to send a duplicate opt-in-mail, when the user clicks on the link, it was a valid e-mail address!
+
 ## Installation
 
 The recommended installation way is through [Composer](https://getcomposer.org).
