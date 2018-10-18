@@ -1,6 +1,12 @@
 Changelog
 =========
 
+3.0.1 (2018-10-19)
+
+- fix "isDnsError()"
+- update "isTemporaryDomain()"
+
+
 3.0.0 (2017-12-23)
 
 - remove "Portable UTF8"
