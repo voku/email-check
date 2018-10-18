@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f1ed56c67b2a4b9e9892df3b61b5dddd)](https://app.codacy.com/app/voku/email-check?utm_source=github.com&utm_medium=referral&utm_content=voku/email-check&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.org/voku/email-check.svg)](https://travis-ci.org/voku/email-check)
 [![codecov.io](http://codecov.io/github/voku/email-check/coverage.svg?branch=master)](http://codecov.io/github/voku/email-check?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/voku/email-check/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/voku/email-check/?branch=master)
