@@ -210,6 +210,7 @@ class EmailCheckTest extends \PHPUnit\Framework\TestCase
     $testArrayTrue = [
         '10minutemail.com',
         '20minutemail.com',
+        'foobar.tk',
     ];
 
     foreach ($testArrayTrue as $domain) {
@@ -301,7 +302,7 @@ class EmailCheckTest extends \PHPUnit\Framework\TestCase
       self::assertTrue(EmailCheck::isValid($companyEmail), $companyEmail);
 
       $safeEmail = $faker->safeEmail; // e.g.: 'king.alford@example.org'
-      self::assertTrue(EmailCheck::isValid($safeEmail, false, true, true, false), $safeEmail);
+      self::assertTrue(EmailCheck::isValid($safeEmail, false, true, false, false), $safeEmail);
     }
   }
 

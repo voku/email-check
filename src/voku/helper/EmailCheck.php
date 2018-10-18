@@ -51,8 +51,7 @@ class EmailCheck
    */
   public static function isValid(string $email, bool $useExampleDomainCheck = false, bool $useTypoInDomainCheck = false, bool $useTemporaryDomainCheck = false, bool $useDnsCheck = false): bool
   {
-    // must be a string
-    if (!\is_string($email)) {
+    if (!isset($email[0])) {
       return false;
     }
 
@@ -215,6 +214,10 @@ class EmailCheck
       return true;
     }
 
+    if (\preg_match('/.*\.(?:tk|ml|ga|cf|gq)$/si', $domain)) {
+      return true;
+    }
+
     return false;
   }
 
@@ -248,7 +251,19 @@ class EmailCheck
   public static function isDnsError(string $domain): bool
   {
     if (\function_exists('checkdnsrr')) {
-      return !\checkdnsrr($domain . '.', 'MX') || !\checkdnsrr($domain, 'A');
+      /** @noinspection IfReturnReturnSimplificationInspection */
+      $mxFound = \checkdnsrr($domain . '.', 'MX');
+      if ($mxFound === true) {
+        return false;
+      }
+
+      $aFound = \checkdnsrr($domain . '.', 'A');
+      /** @noinspection IfReturnReturnSimplificationInspection */
+      if ($aFound === true) {
+        return false;
+      }
+
+      return true;
     }
 
     throw new \Exception(' Can\'t call checkdnsrr');
@@ -278,8 +293,10 @@ class EmailCheck
       }
 
       if ($useIdnaUts46 === true) {
+        /** @noinspection PhpComposerExtensionStubsInspection */
         $localTmp = idn_to_ascii($local, IDNA_NONTRANSITIONAL_TO_ASCII, INTL_IDNA_VARIANT_UTS46);
       } else {
+        /** @noinspection PhpComposerExtensionStubsInspection */
         $localTmp = idn_to_ascii($local);
       }
       if ($localTmp) {
@@ -288,8 +305,10 @@ class EmailCheck
       unset($localTmp);
 
       if ($useIdnaUts46 === true) {
+        /** @noinspection PhpComposerExtensionStubsInspection */
         $domainTmp = idn_to_ascii($domain, IDNA_NONTRANSITIONAL_TO_ASCII, INTL_IDNA_VARIANT_UTS46);
       } else {
+        /** @noinspection PhpComposerExtensionStubsInspection */
         $domainTmp = idn_to_ascii($domain);
       }
       if ($domainTmp) {
