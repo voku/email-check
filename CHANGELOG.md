@@ -1,6 +1,12 @@
 Changelog
 =========
 
+3.0.2 (2019-01-03)
+
+- replace "true/punycode" with "symfony/polyfill-intl-idn"
+- use phpcs fixer
+
+
 3.0.1 (2018-10-19)
 
 - fix "isDnsError()"
