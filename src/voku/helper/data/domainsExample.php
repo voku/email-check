@@ -1,6 +1,6 @@
 <?php
 
-static $data = [
+return [
     'test.de',
     'test.com',
     'test.net',
@@ -10,8 +10,3 @@ static $data = [
     'example.net',
     'example.org',
 ];
-
-$result =& $data;
-unset($data);
-
-return $result;

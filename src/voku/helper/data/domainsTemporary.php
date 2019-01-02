@@ -18,7 +18,7 @@
  * *.gq
  */
 
-static $data = [
+return [
     '0-00.usa.cc',
     '0-mail.com',
     '001.igg.biz',
@@ -5293,8 +5293,3 @@ static $data = [
     'zzi.us',
     'zzz.com',
 ];
-
-$result =& $data;
-unset($data);
-
-return $result;
