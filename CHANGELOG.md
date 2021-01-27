@@ -1,6 +1,11 @@
 Changelog
 =========
 
+3.1.0 (2020-01-27)
+
+- add "getMailParts()"
+
+
 3.0.2 (2019-01-03)
 
 - replace "true/punycode" with "symfony/polyfill-intl-idn"
