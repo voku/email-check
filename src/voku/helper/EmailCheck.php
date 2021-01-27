@@ -129,32 +129,15 @@ class EmailCheck
     }
 
     /**
-     * Check if the email is valid.
-     *
      * @param string $email
-     * @param bool   $useExampleDomainCheck
-     * @param bool   $useTypoInDomainCheck
-     * @param bool   $useTemporaryDomainCheck
-     * @param bool   $useDnsCheck             (do not use, if you don't need it)
      *
-     * @return bool
+     * @return false|array{local: string, domain: string}
      */
-    public static function isValid(string $email, bool $useExampleDomainCheck = false, bool $useTypoInDomainCheck = false, bool $useTemporaryDomainCheck = false, bool $useDnsCheck = false): bool
+    public static function getMailParts(string $email)
     {
-        if (!isset($email[0])) {
+        if ($email === '') {
             return false;
         }
-
-        // make sure string length is limited to avoid DOS attacks
-        $emailStringLength = \strlen($email);
-        if (
-            $emailStringLength >= 320
-            ||
-            $emailStringLength <= 2 // i@y //
-        ) {
-            return false;
-        }
-        unset($emailStringLength);
 
         $email = \str_replace(
             [
@@ -190,6 +173,48 @@ class EmailCheck
         if (!$domain) {
             return false;
         }
+
+        return [
+            'local' => $local,
+            'domain' => $domain,
+        ];
+    }
+
+    /**
+     * Check if the email is valid.
+     *
+     * @param string $email
+     * @param bool   $useExampleDomainCheck
+     * @param bool   $useTypoInDomainCheck
+     * @param bool   $useTemporaryDomainCheck
+     * @param bool   $useDnsCheck             (do not use, if you don't need it)
+     *
+     * @return bool
+     */
+    public static function isValid(string $email, bool $useExampleDomainCheck = false, bool $useTypoInDomainCheck = false, bool $useTemporaryDomainCheck = false, bool $useDnsCheck = false): bool
+    {
+        if (!isset($email[0])) {
+            return false;
+        }
+
+        // make sure string length is limited to avoid DOS attacks
+        $emailStringLength = \strlen($email);
+        if (
+            $emailStringLength >= 320
+            ||
+            $emailStringLength <= 2 // i@y //
+        ) {
+            return false;
+        }
+        unset($emailStringLength);
+
+        $parts = self::getMailParts($email);
+        if ($parts === false) {
+            return false;
+        }
+
+        $local = $parts['local'];
+        $domain = $parts['domain'];
 
         // Escaped spaces are allowed in the "local"-part.
         $local = \str_replace('\\ ', '', $local);
