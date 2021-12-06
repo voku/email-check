@@ -188,10 +188,11 @@ class EmailCheck
      * @param bool   $useTypoInDomainCheck
      * @param bool   $useTemporaryDomainCheck
      * @param bool   $useDnsCheck             (do not use, if you don't need it)
+     * @param bool   $usePunycode
      *
      * @return bool
      */
-    public static function isValid(string $email, bool $useExampleDomainCheck = false, bool $useTypoInDomainCheck = false, bool $useTemporaryDomainCheck = false, bool $useDnsCheck = false): bool
+    public static function isValid(string $email, bool $useExampleDomainCheck = false, bool $useTypoInDomainCheck = false, bool $useTemporaryDomainCheck = false, bool $useDnsCheck = false, bool $usePunycode = true): bool
     {
         if (!isset($email[0])) {
             return false;
@@ -241,7 +242,9 @@ class EmailCheck
             return false;
         }
 
-        list($local, $domain) = self::punnycode($local, $domain);
+        if ($usePunycode) {
+            list($local, $domain) = self::punnycode($local, $domain);
+        }
 
         if ($quoteHelperForIdn === true) {
             $local = '"' . $local . '"';
