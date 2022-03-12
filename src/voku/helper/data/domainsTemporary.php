@@ -4556,7 +4556,6 @@ return [
     'throwawaymail.com',
     'throwawaymail.pp.ua',
     'throya.com',
-    'thug.pw',
     'thunderbolt.science',
     'thunkinator.org',
     'thxmate.com',
