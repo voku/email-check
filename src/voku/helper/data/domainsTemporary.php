@@ -2472,6 +2472,7 @@ return [
     'karitas.com.br',
     'kartvelo.com',
     'kartvelo.me',
+    'karenkey.com',
     'kasmail.com',
     'kaspop.com',
     'katztube.com',
