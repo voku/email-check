@@ -60,18 +60,18 @@ jobs:
             test-command: "vendor/bin/phpunit --bootstrap tests/bootstrap.php tests"
 
     steps:
+      - name: Install system dependencies
+        run: |
+          apt-get update
+          apt-get install -y curl git libicu-dev libonig-dev libxml2-dev unzip
+          docker-php-ext-install intl mbstring xml
+
       - name: Checkout repository
         run: |
           git init .
           git remote add origin https://github.com/${{ github.repository }}.git
           git fetch --no-tags --depth=1 origin ${{ github.sha }}
           git checkout --detach FETCH_HEAD
-
-      - name: Install system dependencies
-        run: |
-          apt-get update
-          apt-get install -y curl git libicu-dev libonig-dev libxml2-dev unzip
-          docker-php-ext-install intl mbstring xml
 
       - name: Install Composer
         run: |
@@ -86,7 +86,7 @@ jobs:
 
       - name: Audit dependencies
         if: matrix.php-version != '7.1'
-        run: composer audit --no-interaction
+        run: composer audit --no-interaction --abandoned=ignore
 
       - name: Run test suite
         run: ${{ matrix.test-command }}
