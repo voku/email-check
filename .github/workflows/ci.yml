@@ -7,6 +7,10 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    container:
+      image: php:${{ matrix.php-version }}-cli
+    env:
+      COMPOSER_ALLOW_SUPERUSER: 1
     strategy:
       fail-fast: false
       matrix:
@@ -21,11 +25,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-version }}
-          coverage: none
-          extensions: intl
+      - name: Install system dependencies
+        run: |
+          apt-get update
+          apt-get install -y curl git libicu-dev unzip
+          docker-php-ext-install intl
+
+      - name: Install Composer
+        run: |
+          curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
       - name: Validate composer.json
         run: composer validate --strict
