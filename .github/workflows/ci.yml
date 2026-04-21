@@ -18,34 +18,75 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - php-version: "7.1"
+            composer-channel: "--2.2"
+            install-command: "composer install --no-interaction --no-dev --prefer-dist"
+            test-command: "php tests/php71-smoke.php"
+          - php-version: "7.2"
+            composer-channel: "--2.2"
+            install-command: "composer update --no-interaction --prefer-dist --prefer-lowest --prefer-stable"
+            test-command: "vendor/bin/phpunit --bootstrap tests/bootstrap.php tests"
+          - php-version: "7.3"
+            composer-channel: ""
+            install-command: "composer update --no-interaction --prefer-dist --prefer-lowest --prefer-stable"
+            test-command: "vendor/bin/phpunit --bootstrap tests/bootstrap.php tests"
           - php-version: "7.4"
-            dependency-flags: "--prefer-lowest --prefer-stable"
+            composer-channel: ""
+            install-command: "composer update --no-interaction --prefer-dist"
+            test-command: "vendor/bin/phpunit --bootstrap tests/bootstrap.php tests"
+          - php-version: "8.0"
+            composer-channel: ""
+            install-command: "composer update --no-interaction --prefer-dist"
+            test-command: "vendor/bin/phpunit --bootstrap tests/bootstrap.php tests"
           - php-version: "8.1"
-            dependency-flags: ""
+            composer-channel: ""
+            install-command: "composer update --no-interaction --prefer-dist"
+            test-command: "vendor/bin/phpunit --bootstrap tests/bootstrap.php tests"
+          - php-version: "8.2"
+            composer-channel: ""
+            install-command: "composer update --no-interaction --prefer-dist"
+            test-command: "vendor/bin/phpunit --bootstrap tests/bootstrap.php tests"
           - php-version: "8.3"
-            dependency-flags: ""
+            composer-channel: ""
+            install-command: "composer update --no-interaction --prefer-dist"
+            test-command: "vendor/bin/phpunit --bootstrap tests/bootstrap.php tests"
+          - php-version: "8.4"
+            composer-channel: ""
+            install-command: "composer update --no-interaction --prefer-dist"
+            test-command: "vendor/bin/phpunit --bootstrap tests/bootstrap.php tests"
+          - php-version: "8.5"
+            composer-channel: ""
+            install-command: "composer update --no-interaction --prefer-dist"
+            test-command: "vendor/bin/phpunit --bootstrap tests/bootstrap.php tests"
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        run: |
+          git init .
+          git remote add origin https://github.com/${{ github.repository }}.git
+          git fetch --no-tags --depth=1 origin ${{ github.sha }}
+          git checkout --detach FETCH_HEAD
 
       - name: Install system dependencies
         run: |
           apt-get update
-          apt-get install -y curl git libicu-dev unzip
-          docker-php-ext-install intl
+          apt-get install -y curl git libicu-dev libonig-dev libxml2-dev unzip
+          docker-php-ext-install intl mbstring xml
 
       - name: Install Composer
         run: |
           curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+          composer self-update ${{ matrix.composer-channel }}
 
       - name: Validate composer.json
         run: composer validate --strict
 
       - name: Install dependencies
-        run: composer update --no-interaction --prefer-dist ${{ matrix.dependency-flags }}
+        run: ${{ matrix.install-command }}
 
       - name: Audit dependencies
+        if: matrix.php-version != '7.1'
         run: composer audit --no-interaction
 
       - name: Run test suite
-        run: vendor/bin/phpunit -c phpunit.xml
+        run: ${{ matrix.test-command }}

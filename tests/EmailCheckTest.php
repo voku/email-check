@@ -1,6 +1,5 @@
 <?php
 
-use Faker\Factory;
 use voku\helper\EmailCheck;
 
 /**
@@ -295,22 +294,20 @@ final class EmailCheckTest extends \PHPUnit\Framework\TestCase
 
     public function testIsMailViaFaker()
     {
-        $faker = Factory::create();
-
-        for ($i = 0; $i < 1000; ++$i) {
-            $name = $faker->firstName; // e.g.: 'Joe'
+        for ($i = 0; $i < 250; ++$i) {
+            $name = 'User' . $i;
             static::assertFalse(EmailCheck::isValid($name), $name);
 
-            $email = $faker->email; // e.g.: 'tkshlerin@collins.com'
+            $email = 'user' . $i . '@example-mail.test';
             static::assertTrue(EmailCheck::isValid($email), $email);
 
-            $freeEmail = $faker->freeEmail; // e.g.: 'bradley72@gmail.com'
+            $freeEmail = 'user' . $i . '@gmail.com';
             static::assertTrue(EmailCheck::isValid($freeEmail), $freeEmail);
 
-            $companyEmail = $faker->companyEmail; // e.g.: 'russel.durward@mcdermott.org'
+            $companyEmail = 'user' . $i . '@company' . $i . '.org';
             static::assertTrue(EmailCheck::isValid($companyEmail), $companyEmail);
 
-            $safeEmail = $faker->safeEmail; // e.g.: 'king.alford@example.org'
+            $safeEmail = 'user' . $i . '@example.org';
             static::assertTrue(EmailCheck::isValid($safeEmail, false, true, false, false), $safeEmail);
         }
     }

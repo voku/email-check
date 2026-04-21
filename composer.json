@@ -24,8 +24,7 @@
     "symfony/polyfill-intl-idn": "~1.10"
   },
   "require-dev": {
-    "fakerphp/faker": "^1.24",
-    "phpunit/phpunit": "^9.6"
+    "phpunit/phpunit": "^8.5.52 || ^9.6.33"
   },
   "suggest": {
     "ext-intl": "Use Intl for best performance"
