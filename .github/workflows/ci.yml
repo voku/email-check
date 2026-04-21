@@ -78,6 +78,7 @@ jobs:
 
       - name: Checkout repository
         run: |
+          git config --global --add safe.directory "$PWD"
           git init .
           git remote add origin https://github.com/${{ github.repository }}.git
           git fetch --no-tags --depth=1 origin ${{ github.sha }}
