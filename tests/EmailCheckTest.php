@@ -178,6 +178,14 @@ final class EmailCheckTest extends \PHPUnit\Framework\TestCase
 
     public function testIsDnsError()
     {
+        if (!\function_exists('checkdnsrr')) {
+            static::markTestSkipped('DNS checks are not available in this PHP build.');
+        }
+
+        if (EmailCheck::isDnsError('iana.org')) {
+            static::markTestSkipped('DNS lookups are not available in this environment.');
+        }
+
         $testArrayFalse = [
             'dsadsadasdvgffdee-foo.de',
             'ääääääöüüüüüüfoo.com',
