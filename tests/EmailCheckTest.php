@@ -17,12 +17,12 @@ final class EmailCheckTest extends \PHPUnit\Framework\TestCase
      */
     protected $validator;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->validator = new EmailCheck();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->validator = null;
     }
@@ -329,7 +329,7 @@ final class EmailCheckTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array
      */
-    public function getValidEmails()
+    public function getValidEmails(): array
     {
         return [
             ['!#$%&`*+/=?^`{|}~@iana.org'],
@@ -386,7 +386,7 @@ final class EmailCheckTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array
      */
-    public function getInvalidEmails()
+    public function getInvalidEmails(): array
     {
         return [
             [''], // Address has no domain part

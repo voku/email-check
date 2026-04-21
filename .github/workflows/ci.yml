@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php-version: "7.4"
+            dependency-flags: "--prefer-lowest --prefer-stable"
+          - php-version: "8.1"
+            dependency-flags: ""
+          - php-version: "8.3"
+            dependency-flags: ""
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: none
+          extensions: intl
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      - name: Install dependencies
+        run: composer update --no-interaction --prefer-dist ${{ matrix.dependency-flags }}
+
+      - name: Audit dependencies
+        run: composer audit --no-interaction
+
+      - name: Run test suite
+        run: vendor/bin/phpunit -c phpunit.xml
