@@ -5,6 +5,7 @@
 
 # php (phpunit)
 build/
+.phpunit.result.cache
 
 # composer
 vendor
@@ -74,4 +75,3 @@ $RECYCLE.BIN/
 
 # KDE directory preferences
 .directory
-
