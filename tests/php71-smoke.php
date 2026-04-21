@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 use voku\helper\EmailCheck;
 
-require_once __DIR__ . '/bootstrap.php';
+$autoload = \dirname(__DIR__) . '/vendor/autoload.php';
+if (\file_exists($autoload)) {
+    require_once $autoload;
+} else {
+    require_once \dirname(__DIR__) . '/src/voku/helper/EmailCheck.php';
+}
 
 $checks = [
     ['lars@moelleken.org', true],

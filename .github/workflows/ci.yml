@@ -19,11 +19,11 @@ jobs:
       matrix:
         include:
           - php-version: "7.1"
-            composer-channel: "--2.2"
-            install-command: "composer install --no-interaction --no-dev --prefer-dist"
+            composer-channel: ""
+            install-command: ":"
             test-command: "php tests/php71-smoke.php"
           - php-version: "7.2"
-            composer-channel: "--2.2"
+            composer-channel: ""
             install-command: "composer update --no-interaction --prefer-dist --prefer-lowest --prefer-stable"
             test-command: "vendor/bin/phpunit --no-configuration --bootstrap tests/bootstrap.php tests"
           - php-version: "7.3"
@@ -70,7 +70,8 @@ jobs:
           )
 
           if [ "${{ matrix.php-version }}" = "7.1" ]; then
-            apt-get install -y curl git unzip
+            apt-get install -y curl git libicu-dev unzip
+            docker-php-ext-install intl
           else
             apt-get install -y curl git libicu-dev libonig-dev libxml2-dev unzip
             docker-php-ext-install intl mbstring xml
@@ -85,14 +86,19 @@ jobs:
           git checkout --detach FETCH_HEAD
 
       - name: Install Composer
+        if: matrix.php-version != '7.1'
         run: |
           curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-          composer self-update ${{ matrix.composer-channel }}
+          if [ -n "${{ matrix.composer-channel }}" ]; then
+            composer self-update ${{ matrix.composer-channel }}
+          fi
 
       - name: Validate composer.json
+        if: matrix.php-version != '7.1'
         run: composer validate --strict
 
       - name: Install dependencies
+        if: matrix.php-version != '7.1'
         run: ${{ matrix.install-command }}
 
       - name: Audit dependencies
