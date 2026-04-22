@@ -204,6 +204,38 @@ final class EmailCheckTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    public function testIsDnsErrorForNullMxRecord()
+    {
+        if (!\function_exists('dns_get_record')) {
+            static::markTestSkipped('DNS checks are not available in this PHP build.');
+        }
+
+        $mxRecords = \dns_get_record('example.com.', \DNS_MX);
+        if (!\is_array($mxRecords) || $mxRecords === []) {
+            static::markTestSkipped('DNS lookups are not available in this environment.');
+        }
+
+        $hasNullMxRecord = false;
+        foreach ($mxRecords as $mxRecord) {
+            $mxTarget = '';
+            if (isset($mxRecord['target'])) {
+                $mxTarget = \trim((string) $mxRecord['target']);
+            }
+
+            if ((int) ($mxRecord['pri'] ?? -1) === 0 && ($mxTarget === '' || $mxTarget === '.')) {
+                $hasNullMxRecord = true;
+                break;
+            }
+        }
+
+        if ($hasNullMxRecord === false) {
+            static::markTestSkipped('example.com no longer has a null MX record in this environment.');
+        }
+
+        static::assertTrue(EmailCheck::isDnsError('example.com'));
+        static::assertFalse(EmailCheck::isValid('lars@example.com', false, false, false, true));
+    }
+
     public function testIsTemporaryDomain()
     {
         $testArrayFalse = [
