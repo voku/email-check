@@ -298,7 +298,6 @@ class EmailCheck
      */
     private static function punnycode(string $local, string $domain): array
     {
-
         // https://git.ispconfig.org/ispconfig/ispconfig3/blob/master/interface/lib/classes/functions.inc.php#L305
         if (
             \defined('IDNA_NONTRANSITIONAL_TO_ASCII')
@@ -312,26 +311,32 @@ class EmailCheck
             $useIdnaUts46 = false;
         }
 
-        if ($useIdnaUts46 === true) {
-            /** @noinspection PhpComposerExtensionStubsInspection */
-            $localTmp = \idn_to_ascii($local, \IDNA_NONTRANSITIONAL_TO_ASCII, \INTL_IDNA_VARIANT_UTS46);
-        } else {
-            /** @noinspection PhpComposerExtensionStubsInspection */
-            $localTmp = \idn_to_ascii($local);
+        $localTmp = false;
+        if ($local !== '') {
+            if ($useIdnaUts46 === true) {
+                /** @noinspection PhpComposerExtensionStubsInspection */
+                $localTmp = \idn_to_ascii($local, \IDNA_NONTRANSITIONAL_TO_ASCII, \INTL_IDNA_VARIANT_UTS46);
+            } else {
+                /** @noinspection PhpComposerExtensionStubsInspection */
+                $localTmp = \idn_to_ascii($local);
+            }
         }
-        if ($localTmp) {
+        if ($localTmp !== false) {
             $local = $localTmp;
         }
         unset($localTmp);
 
-        if ($useIdnaUts46 === true) {
-            /** @noinspection PhpComposerExtensionStubsInspection */
-            $domainTmp = \idn_to_ascii($domain, \IDNA_NONTRANSITIONAL_TO_ASCII, \INTL_IDNA_VARIANT_UTS46);
-        } else {
-            /** @noinspection PhpComposerExtensionStubsInspection */
-            $domainTmp = \idn_to_ascii($domain);
+        $domainTmp = false;
+        if ($domain !== '') {
+            if ($useIdnaUts46 === true) {
+                /** @noinspection PhpComposerExtensionStubsInspection */
+                $domainTmp = \idn_to_ascii($domain, \IDNA_NONTRANSITIONAL_TO_ASCII, \INTL_IDNA_VARIANT_UTS46);
+            } else {
+                /** @noinspection PhpComposerExtensionStubsInspection */
+                $domainTmp = \idn_to_ascii($domain);
+            }
         }
-        if ($domainTmp) {
+        if ($domainTmp !== false) {
             $domain = $domainTmp;
         }
         unset($domainTmp);

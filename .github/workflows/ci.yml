@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    container:
+      image: php:${{ matrix.php-version }}-cli
+    env:
+      COMPOSER_ALLOW_SUPERUSER: 1
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php-version: "7.1"
+            composer-channel: ""
+            install-command: ":"
+            test-command: "php tests/php71-smoke.php"
+          - php-version: "7.2"
+            composer-channel: ""
+            install-command: "composer update --no-interaction --prefer-dist --prefer-lowest --prefer-stable"
+            test-command: "vendor/bin/phpunit --no-configuration --bootstrap tests/bootstrap.php tests"
+          - php-version: "7.3"
+            composer-channel: ""
+            install-command: "composer update --no-interaction --prefer-dist --prefer-lowest --prefer-stable"
+            test-command: "vendor/bin/phpunit --no-configuration --bootstrap tests/bootstrap.php tests"
+          - php-version: "7.4"
+            composer-channel: ""
+            install-command: "composer update --no-interaction --prefer-dist"
+            test-command: "vendor/bin/phpunit --no-configuration --bootstrap tests/bootstrap.php tests"
+          - php-version: "8.0"
+            composer-channel: ""
+            install-command: "composer update --no-interaction --prefer-dist"
+            test-command: "vendor/bin/phpunit --no-configuration --bootstrap tests/bootstrap.php tests"
+          - php-version: "8.1"
+            composer-channel: ""
+            install-command: "composer update --no-interaction --prefer-dist"
+            test-command: "vendor/bin/phpunit --no-configuration --bootstrap tests/bootstrap.php tests"
+          - php-version: "8.2"
+            composer-channel: ""
+            install-command: "composer update --no-interaction --prefer-dist"
+            test-command: "vendor/bin/phpunit --no-configuration --bootstrap tests/bootstrap.php tests"
+          - php-version: "8.3"
+            composer-channel: ""
+            install-command: "composer update --no-interaction --prefer-dist"
+            test-command: "vendor/bin/phpunit --no-configuration --bootstrap tests/bootstrap.php tests"
+          - php-version: "8.4"
+            composer-channel: ""
+            install-command: "composer update --no-interaction --prefer-dist"
+            test-command: "vendor/bin/phpunit --no-configuration --bootstrap tests/bootstrap.php tests"
+          - php-version: "8.5"
+            composer-channel: ""
+            install-command: "composer update --no-interaction --prefer-dist"
+            test-command: "vendor/bin/phpunit --no-configuration --bootstrap tests/bootstrap.php tests"
+
+    steps:
+      - name: Install system dependencies
+        run: |
+          apt-get update || (
+            sed -i 's|deb.debian.org/debian|archive.debian.org/debian|g; s|security.debian.org/debian-security|archive.debian.org/debian-security|g' /etc/apt/sources.list &&
+            sed -i '/-updates /d' /etc/apt/sources.list &&
+            printf 'Acquire::Check-Valid-Until "false";\n' > /etc/apt/apt.conf.d/99no-check-valid &&
+            apt-get update -o Acquire::Check-Valid-Until=false
+          )
+
+          if [ "${{ matrix.php-version }}" = "7.1" ]; then
+            apt-get install -y curl git libicu-dev unzip
+            docker-php-ext-install intl
+          else
+            apt-get install -y curl git libicu-dev libonig-dev libxml2-dev unzip
+            docker-php-ext-install intl mbstring xml
+          fi
+
+      - name: Checkout repository
+        run: |
+          git config --global --add safe.directory "$PWD"
+          git init .
+          git remote add origin https://github.com/${{ github.repository }}.git
+          git fetch --no-tags --depth=1 origin ${{ github.sha }}
+          git checkout --detach FETCH_HEAD
+
+      - name: Install Composer
+        if: matrix.php-version != '7.1'
+        run: |
+          curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+          if [ -n "${{ matrix.composer-channel }}" ]; then
+            composer self-update ${{ matrix.composer-channel }}
+          fi
+
+      - name: Validate composer.json
+        if: matrix.php-version != '7.1'
+        run: composer validate --strict
+
+      - name: Install dependencies
+        if: matrix.php-version != '7.1'
+        run: ${{ matrix.install-command }}
+
+      - name: Audit dependencies
+        if: matrix.php-version != '7.1'
+        run: composer audit --no-interaction --abandoned=ignore
+
+      - name: Run test suite
+        run: ${{ matrix.test-command }}
