@@ -45,6 +45,46 @@ class EmailCheck
      */
     public static function isDnsError(string $domain): bool
     {
+        if (\function_exists('dns_get_record')) {
+            /** @noinspection SillyAssignmentInspection */
+            $mxRecords = @\dns_get_record($domain . '.', \DNS_MX);
+            if (\is_array($mxRecords) && $mxRecords !== []) {
+                $hasNullMxOnly = true;
+
+                foreach ($mxRecords as $mxRecord) {
+                    if (!isset($mxRecord['pri'])) {
+                        continue;
+                    }
+
+                    $mxTarget = '';
+                    if (isset($mxRecord['target'])) {
+                        $mxTarget = \trim((string) $mxRecord['target']);
+                    }
+
+                    if ((int) $mxRecord['pri'] === 0 && ($mxTarget === '' || $mxTarget === '.')) {
+                        continue;
+                    }
+
+                    $hasNullMxOnly = false;
+                    break;
+                }
+
+                if ($hasNullMxOnly === true) {
+                    return true;
+                }
+
+                return false;
+            }
+
+            /** @noinspection SillyAssignmentInspection */
+            $aRecords = @\dns_get_record($domain . '.', \DNS_A);
+            if (\is_array($aRecords) && $aRecords !== []) {
+                return false;
+            }
+
+            return true;
+        }
+
         if (\function_exists('checkdnsrr')) {
             /** @noinspection IfReturnReturnSimplificationInspection */
             $mxFound = \checkdnsrr($domain . '.', 'MX');
