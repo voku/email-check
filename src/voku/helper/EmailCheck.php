@@ -298,7 +298,6 @@ class EmailCheck
      */
     private static function punnycode(string $local, string $domain): array
     {
-
         // https://git.ispconfig.org/ispconfig/ispconfig3/blob/master/interface/lib/classes/functions.inc.php#L305
         if (
             \defined('IDNA_NONTRANSITIONAL_TO_ASCII')
