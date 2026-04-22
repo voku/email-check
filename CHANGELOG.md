@@ -1,6 +1,13 @@
 Changelog
 =========
 
+master (2026-04-22)
+
+- upgrade to GitHub-native Dependabot (#14)
+- apply fixes from StyleCI (#30)
+- expand CI matrix to PHP 7.1-8.5 and fix cross-version test/runtime failures (#29)
+
+
 3.1.0 (2020-01-27)
 
 - add "getMailParts()"
