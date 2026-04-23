@@ -249,6 +249,7 @@ final class EmailCheckTest extends \PHPUnit\Framework\TestCase
 
         $testArrayTrue = [
             '10minutemail.com',
+            '1secmail.com',
             '20minutemail.com',
             'foobar.tk',
         ];
@@ -272,6 +273,7 @@ final class EmailCheckTest extends \PHPUnit\Framework\TestCase
         $testArrayTrue = [
             'aol.con',
             'ao.com',
+            'gmail.con',
         ];
 
         foreach ($testArrayTrue as $domain) {
@@ -313,6 +315,9 @@ final class EmailCheckTest extends \PHPUnit\Framework\TestCase
 
     public function testIsEmailExample()
     {
+        static::assertTrue(EmailCheck::isExampleDomain('example.test'));
+        static::assertTrue(EmailCheck::isExampleDomain('localhost'));
+
         // Not valid
         static::assertFalse(EmailCheck::isValid('example.com', true, false, false, false));
         static::assertFalse(EmailCheck::isValid('example@example', true, false, false, false));

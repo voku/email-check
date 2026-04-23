@@ -228,12 +228,18 @@ class EmailCheck
      * @param bool   $useTypoInDomainCheck
      * @param bool   $useTemporaryDomainCheck
      * @param bool   $useDnsCheck             (do not use, if you don't need it)
-     * @param bool   $usePunycode            (convert local + domain to punycode before validation)
+     * @param bool   $usePunycode             (convert local + domain to punycode before validation)
      *
      * @return bool
      */
-    public static function isValid(string $email, bool $useExampleDomainCheck = false, bool $useTypoInDomainCheck = false, bool $useTemporaryDomainCheck = false, bool $useDnsCheck = false, bool $usePunycode = true): bool
-    {
+    public static function isValid(
+      string $email,
+      bool $useExampleDomainCheck = false,
+      bool $useTypoInDomainCheck = false,
+      bool $useTemporaryDomainCheck = false,
+      bool $useDnsCheck = false,
+      bool $usePunycode = true
+    ): bool {
         if (!isset($email[0])) {
             return false;
         }

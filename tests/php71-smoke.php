@@ -38,12 +38,24 @@ if (EmailCheck::isExampleDomain('example.com') !== true) {
     throw new RuntimeException('Expected example.com to be detected as an example domain.');
 }
 
+if (EmailCheck::isExampleDomain('example.test') !== true) {
+    throw new RuntimeException('Expected example.test to be detected as an example domain.');
+}
+
 if (EmailCheck::isTemporaryDomain('10minutemail.com') !== true) {
     throw new RuntimeException('Expected 10minutemail.com to be detected as temporary.');
 }
 
+if (EmailCheck::isTemporaryDomain('1secmail.com') !== true) {
+    throw new RuntimeException('Expected 1secmail.com to be detected as temporary.');
+}
+
 if (EmailCheck::isTypoInDomain('aol.con') !== true) {
     throw new RuntimeException('Expected aol.con to be detected as a typo domain.');
+}
+
+if (EmailCheck::isTypoInDomain('gmail.con') !== true) {
+    throw new RuntimeException('Expected gmail.con to be detected as a typo domain.');
 }
 
 fwrite(STDOUT, "PHP 7.1 smoke tests passed.\n");
