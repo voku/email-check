@@ -233,12 +233,12 @@ class EmailCheck
      * @return bool
      */
     public static function isValid(
-      string $email,
-      bool $useExampleDomainCheck = false,
-      bool $useTypoInDomainCheck = false,
-      bool $useTemporaryDomainCheck = false,
-      bool $useDnsCheck = false,
-      bool $usePunycode = true
+        string $email,
+        bool $useExampleDomainCheck = false,
+        bool $useTypoInDomainCheck = false,
+        bool $useTemporaryDomainCheck = false,
+        bool $useDnsCheck = false,
+        bool $usePunycode = true
     ): bool {
         if (!isset($email[0])) {
             return false;
