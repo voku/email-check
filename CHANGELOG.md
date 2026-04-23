@@ -1,11 +1,13 @@
 Changelog
 =========
 
-master (2026-04-22)
+master (2026-04-23)
 
 - upgrade to GitHub-native Dependabot (#14)
 - apply fixes from StyleCI (#30)
 - expand CI matrix to PHP 7.1-8.5 and fix cross-version test/runtime failures (#29)
+- handle RFC 7505 null MX records as DNS errors (#33)
+- add optional punycode conversion toggle to `isValid()` (#34)
 
 
 3.1.0 (2020-01-27)
