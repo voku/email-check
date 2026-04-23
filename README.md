@@ -47,6 +47,12 @@ Example 4: (check for temporary-domain)
     
     // false
 
+Example 5: (disable punycode conversion)
+
+    $emailCheck = EmailCheck::isValid("Lars@Mölleken.ORG", false, false, false, false, false);
+    
+    // false
+
 ### Unit Test:
 
 1) [Composer](https://getcomposer.org) and PHP 7.4+ are prerequisites for running the tests.

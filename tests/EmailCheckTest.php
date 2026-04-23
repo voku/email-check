@@ -363,6 +363,17 @@ final class EmailCheckTest extends \PHPUnit\Framework\TestCase
         static::assertFalse($validator->isValid($email));
     }
 
+    public function testIsValidWithoutPunycodeConversion()
+    {
+        static::assertTrue(EmailCheck::isValid('foobar@😍🎻😸🎩🎱🎮🍟🐝.🍕💩.ws'));
+        static::assertFalse(EmailCheck::isValid('foobar@😍🎻😸🎩🎱🎮🍟🐝.🍕💩.ws', false, false, false, false, false));
+
+        static::assertTrue(EmailCheck::isValid('Lars@Mölleken.ORG'));
+        static::assertFalse(EmailCheck::isValid('Lars@Mölleken.ORG', false, false, false, false, false));
+
+        static::assertTrue(EmailCheck::isValid('lars@moelleken.org', false, false, false, false, false));
+    }
+
     /**
      * @return array
      */
