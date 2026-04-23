@@ -1,14 +1,12 @@
 Changelog
 =========
 
-master (2026-04-23)
+3.2.0 (2026-04-23)
 
-- upgrade to GitHub-native Dependabot (#14)
-- apply fixes from StyleCI (#30)
-- expand CI matrix to PHP 7.1-8.5 and fix cross-version test/runtime failures (#29)
+- add additional example and typo domains for email validation
 - handle RFC 7505 null MX records as DNS errors (#33)
 - add optional punycode conversion toggle to `isValid()` (#34)
-
+- expand CI matrix to PHP 7.1-8.5 and fix cross-version test/runtime failures
 
 3.1.0 (2020-01-27)
 
@@ -37,6 +35,6 @@ master (2026-04-23)
 
 2.0.0 (2017-12-01)
 
-- "php": ">=7.0" 
+- "php": ">=7.0"
   * drop support for PHP < 7.0
   * use "strict_types"
