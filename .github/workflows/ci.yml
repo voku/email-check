@@ -129,10 +129,29 @@ jobs:
         run: composer update --no-interaction --prefer-dist
 
       - name: Install Infection tooling
-        run: composer install --working-dir=tools/infection --no-interaction --prefer-dist
+        run: |
+          tools_dir="${RUNNER_TEMP}/infection-tools"
+          mkdir -p "${tools_dir}"
+
+          cat > "${tools_dir}/composer.json" <<'JSON'
+          {
+            "require": {
+              "infection/infection": "0.32.7",
+              "phpstan/phpstan": "2.1.54"
+            },
+            "config": {
+              "allow-plugins": {
+                "infection/extension-installer": true
+              }
+            }
+          }
+          JSON
+
+          composer install --working-dir="${tools_dir}" --no-interaction --prefer-dist
+          echo "${tools_dir}/vendor/bin" >> "$GITHUB_PATH"
 
       - name: Run PHPStan
-        run: tools/infection/vendor/bin/phpstan analyse --no-progress
+        run: phpstan analyse --configuration=phpstan.neon.dist --no-progress
 
       - name: Run Infection with PHPStan integration
-        run: tools/infection/vendor/bin/infection --configuration=infection.json5 --threads=max --logger-github
+        run: infection --configuration=infection.json5 --threads=max --logger-github

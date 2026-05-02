@@ -10,7 +10,6 @@ build/
 # composer
 vendor
 composer.lock
-!tools/infection/composer.lock
 
 ### PhpStorm ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm

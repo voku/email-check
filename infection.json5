@@ -8,9 +8,6 @@
     phpUnit: {
         customPath: "vendor/bin/phpunit"
     },
-    phpStan: {
-        customPath: "tools/infection/vendor/bin/phpstan"
-    },
     staticAnalysisTool: "phpstan",
     minMsi: 0,
     minCoveredMsi: 0,
