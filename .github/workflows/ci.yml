@@ -107,3 +107,51 @@ jobs:
 
       - name: Run test suite
         run: ${{ matrix.test-command }}
+
+  infection:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          coverage: xdebug
+          tools: composer:v2
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      - name: Install project dependencies
+        run: composer update --no-interaction --prefer-dist
+
+      - name: Install Infection tooling
+        run: |
+          tools_dir="${RUNNER_TEMP}/infection-tools"
+          mkdir -p "${tools_dir}"
+
+          cat > "${tools_dir}/composer.json" <<'JSON'
+          {
+            "require": {
+              "infection/infection": "0.32.7",
+              "phpstan/phpstan": "2.1.54"
+            },
+            "config": {
+              "allow-plugins": {
+                "infection/extension-installer": true
+              }
+            }
+          }
+          JSON
+
+          composer install --working-dir="${tools_dir}" --no-interaction --prefer-dist
+          echo "${tools_dir}/vendor/bin" >> "$GITHUB_PATH"
+
+      - name: Run PHPStan
+        run: phpstan analyse --configuration=phpstan.neon.dist --no-progress
+
+      - name: Run Infection with PHPStan integration
+        run: infection --configuration=infection.json5 --threads=max --logger-github
