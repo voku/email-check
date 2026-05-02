@@ -335,11 +335,10 @@ class EmailCheck
         $file = __DIR__ . '/data/' . $file . '.php';
         if (\file_exists($file)) {
             /** @noinspection PhpIncludeInspection */
+            /** @var list<string> $data */
             $data = require $file;
 
-            if (\is_array($data)) {
-                return $data;
-            }
+            return $data;
         }
 
         return [];
