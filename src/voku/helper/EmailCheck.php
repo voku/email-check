@@ -338,14 +338,7 @@ class EmailCheck
             $data = require $file;
 
             if (\is_array($data)) {
-                return \array_values(
-                    \array_filter(
-                        $data,
-                        static function ($value): bool {
-                            return \is_string($value);
-                        }
-                    )
-                );
+                return $data;
             }
         }
 
