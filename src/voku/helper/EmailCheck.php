@@ -15,17 +15,17 @@ namespace voku\helper;
 class EmailCheck
 {
     /**
-     * @var array|null
+     * @var list<string>|null
      */
     protected static $domainsExample = null;
 
     /**
-     * @var array|null
+     * @var list<string>|null
      */
     protected static $domainsTemporary = null;
 
     /**
-     * @var array|null
+     * @var list<string>|null
      */
     protected static $domainsTypo = null;
 
@@ -52,12 +52,16 @@ class EmailCheck
                 $hasNullMxOnly = true;
 
                 foreach ($mxRecords as $mxRecord) {
-                    if (!isset($mxRecord['pri'])) {
+                    if (
+                        !isset($mxRecord['pri'])
+                        ||
+                        (!\is_int($mxRecord['pri']) && !\is_string($mxRecord['pri']))
+                    ) {
                         continue;
                     }
 
                     $mxTarget = '';
-                    if (isset($mxRecord['target'])) {
+                    if (isset($mxRecord['target']) && (\is_int($mxRecord['target']) || \is_string($mxRecord['target']))) {
                         $mxTarget = \trim((string) $mxRecord['target']);
                     }
 
@@ -206,11 +210,7 @@ class EmailCheck
         $local = $parts['local'];
         $domain = $parts['domain'];
 
-        if (!$local) {
-            return false;
-        }
-
-        if (!$domain) {
+        if ($local === '' || $domain === '') {
             return false;
         }
 
@@ -269,11 +269,12 @@ class EmailCheck
         // Spaces in quotes e.g. "firstname lastname"@foo.bar are also allowed in the "local"-part.
         $quoteHelperForIdn = false;
         if (\preg_match('/^"(?<inner>[^"]*)"$/mU', $local, $parts)) {
+            $inner = $parts['inner'];
             $quoteHelperForIdn = true;
             $local = \trim(
                 \str_replace(
-                    $parts['inner'],
-                    \str_replace(' ', '', $parts['inner']),
+                    $inner,
+                    \str_replace(' ', '', $inner),
                     $local
                 ),
                 '"'
@@ -326,24 +327,35 @@ class EmailCheck
      *
      * @param string $file
      *
-     * @return array|bool|int|string <p>Will return false on error.</p>
+     * @return list<string>
      */
-    protected static function getData(string $file)
+    protected static function getData(string $file): array
     {
         $file = __DIR__ . '/data/' . $file . '.php';
         if (\file_exists($file)) {
             /** @noinspection PhpIncludeInspection */
-            return require $file;
+            $data = require $file;
+
+            if (\is_array($data)) {
+                return \array_values(
+                    \array_filter(
+                        $data,
+                        static function ($value): bool {
+                            return \is_string($value);
+                        }
+                    )
+                );
+            }
         }
 
-        return false;
+        return [];
     }
 
     /**
      * @param string $local
      * @param string $domain
      *
-     * @return array
+     * @return array{0: string, 1: string}
      */
     private static function punnycode(string $local, string $domain): array
     {
@@ -352,8 +364,6 @@ class EmailCheck
             \defined('IDNA_NONTRANSITIONAL_TO_ASCII')
             &&
             \defined('INTL_IDNA_VARIANT_UTS46')
-            &&
-            \constant('IDNA_NONTRANSITIONAL_TO_ASCII')
         ) {
             $useIdnaUts46 = true;
         } else {
