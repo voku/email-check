@@ -60,12 +60,13 @@ class EmailCheck
                         continue;
                     }
 
+                    $mxPriority = (int) $mxRecord['pri'];
                     $mxTarget = '';
                     if (isset($mxRecord['target']) && (\is_int($mxRecord['target']) || \is_string($mxRecord['target']))) {
                         $mxTarget = \trim((string) $mxRecord['target']);
                     }
 
-                    if ((int) $mxRecord['pri'] === 0 && ($mxTarget === '' || $mxTarget === '.')) {
+                    if ($mxPriority === 0 && ($mxTarget === '' || $mxTarget === '.')) {
                         continue;
                     }
 
